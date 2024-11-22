@@ -1,14 +1,15 @@
 from datetime import datetime
 from fastapi import Depends
-from sqlmodel import Session, select
-from typing import Annotated
+from sqlmodel import Session, select, or_
+from typing import Annotated, List, Literal, Optional
+from pydantic import EmailStr
 from uuid import UUID, uuid4
 
 from core.db import get_db
 from core.security import create_password_hash
 from core.setting import DevSetting
-from models.db_models import User, UserOutput
-from models.shemas import SchemaUserRegisterInput
+from models.user_models import User, UserOutput
+from models.user_models import SchemaUserRegisterInput
 
 
 SessionDeps  = Annotated[Session, Depends(get_db)]
@@ -16,7 +17,7 @@ SessionDeps  = Annotated[Session, Depends(get_db)]
 
 def create_user(*, session: SessionDeps, user: SchemaUserRegisterInput):
     """
-    ユーザー作成処理
+    ユーザー作成
     """
     now = datetime.now(tz=DevSetting().TZ)
     insert_user = User.model_validate(user, update={
@@ -28,39 +29,41 @@ def create_user(*, session: SessionDeps, user: SchemaUserRegisterInput):
     session.add(insert_user)
     session.commit()
     session.refresh(insert_user)
-    output_user = UserOutput.model_validate(insert_user)
-    return output_user
+    return insert_user
 
 
-def fetch_user_by_username(*, session: SessionDeps, username: str) -> UserOutput | None:
+def fetch_users(
+    *, 
+    session: SessionDeps, 
+    uuid: UUID = None, 
+    username: str = None, 
+    email: EmailStr = None,
+    condition: Optional[Literal['or', 'and']] = 'and',
+    ):
     """
-    ユーザー名からユーザー情報を取得
+    条件に合致するユーザーの情報を取得する関数。
+    args:
+        session: SessionDeps
+        uuid: UUID | None
+        username: str | None
+        email: EmailStr | None
+        condition: Optional[Literal['or', 'and']], default='and'
+    return:
+        Users: List[User]
     """
-    stmt = select(User).where(User.username == username)
-    user = session.exec(stmt).first()
-    if user is None:
-        return None
-    user_output = UserOutput.model_validate(user)
-    return user_output
-
-
-def fetch_user_by_email(*, session: SessionDeps, email: str):
-    """
-    emailからユーザー情報を取得
-    """
-    stmt = select(User).where(User.email == email)
-    user = session.exec(stmt).first()
-    if user is None:
-        return None
-    user_output = UserOutput.model_validate(user)
-    return user_output
-
-
-def fetch_user_by_uuid(*, session: SessionDeps, uuid: UUID):
-    """
-    UUIDからユーザー情報を取得
-    """
-    stmt = select(User).where(User.uuid == uuid)
-    user = session.exec(stmt).first()
-    user_output = UserOutput.model_validate(user)
-    return user_output
+    filters = []
+    if uuid is not None:
+        filters.append(User.uuid == uuid)
+    if username is not None:
+        filters.append(User.username == username)
+    if email is not None:
+        filters.append(User.email == email)
+    
+    if condition == 'and':
+        stmt = select(User).where(*filters)
+    elif condition == 'or':
+        stmt = select(User).where(or_(*filters)) 
+        
+    users: List[User] = session.exec(stmt).all()
+    
+    return users

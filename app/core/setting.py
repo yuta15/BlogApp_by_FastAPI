@@ -12,3 +12,5 @@ class SettingBase(BaseSettings):
 class DevSetting(SettingBase):
     DB_URL: str = 'sqlite:///test.db'
     ENV: str = 'Dev'
+    EXPIRE_DELTA: timedelta = timedelta(minutes=15)
+    
