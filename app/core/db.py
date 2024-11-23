@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlmodel import Session, create_engine, SQLModel
-from core.setting import DevSetting
+from core.setting import setting
 
-db_url = DevSetting().DB_URL
+db_url = setting.DB_URL
 engin = create_engine(db_url)
 
 
