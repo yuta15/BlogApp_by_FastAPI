@@ -1,7 +1,8 @@
 from passlib.context import CryptContext
-from datetime import datetime
+from datetime import datetime, timedelta
+from fastapi import HTTPException
 import jwt
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from pydantic import EmailStr
 
 from core.setting import DevSetting
@@ -11,7 +12,7 @@ PWD_CONTEXT = CryptContext(schemes=['bcrypt'], deprecated='auto')
 ALGORITHM = DevSetting().ALGORITHM
 SECRET_KEY = DevSetting().SECRET_KEY
 CURRENT_TIME = datetime.now(DevSetting().TZ)
-
+EXPIRE_DELTA = DevSetting().EXPIRE_DELTA
 
 def create_password_hash(password: str):
     """
@@ -42,13 +43,17 @@ def generate_token(username: str, email: EmailStr):
     return:
         encoded_jwt: str
     """
-    global ALGORITHM, SECRET_KEY, CURRENT_TIME
-    subject = {
-        'username': username,
-        'email': email
+    global ALGORITHM, SECRET_KEY, CURRENT_TIME, EXPIRE_DELTA
+    payload = {
+        'iat': CURRENT_TIME,
+        'exp': CURRENT_TIME + EXPIRE_DELTA,
+        'sub': {
+            'username': username,
+            'email': email
+        }
     }
     encoded_jwt: str = jwt.encode(
-        payload=subject,
+        payload=payload,
         key=SECRET_KEY,
         algorithm=ALGORITHM
         )
@@ -67,8 +72,10 @@ def decode_jwt(input_jwt: jwt):
             key=SECRET_KEY, 
             algorithms=[ALGORITHM]
             )
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail='Expired Access Token')
     except InvalidTokenError:
-        return None
+        raise HTTPException(status_code=401, detail='Decode Erro')
     else:
-        return decoded_jwt['sub']
+        return decoded_jwt
     

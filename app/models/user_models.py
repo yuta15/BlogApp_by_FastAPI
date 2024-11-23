@@ -25,10 +25,6 @@ class UserOutput(UserModel):
     class Config:
         orm_mode = True
 
-    
-class UserVerify(UserModel):
-    pass
-
 
 class SchemaUserBase(BaseModel):
     username: str = Field(max_length=50, min_length=3)
@@ -43,19 +39,3 @@ class SchemaUserRegisterOutput(SchemaUserBase):
     email: EmailStr
     create_at: datetime
     update_at: datetime
-    
-    
-class SchemaUserReference(BaseModel):
-    username: str | None
-    email: EmailStr | None
-
-
-class SchemaUserLoginInput(SchemaUserBase):
-    plain_password: str = Field(min_length=8, max_length=100)
-
-
-class ShemaUserLoginOutput(SchemaUserBase):
-    token: str
-    
-    class Config:
-        orm_mode = True

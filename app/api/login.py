@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from typing import List
+from fastapi.security import OAuth2PasswordRequestForm
+from typing import List, Annotated
 
-from models.user_models import SchemaUserLoginInput, ShemaUserLoginOutput, User
+from core.security import generate_token
 from deps.crud import SessionDeps, fetch_users
 from deps.verify import verify_user_credentials
-from core.security import decode_jwt, generate_token
+from deps.resolve import resolve_user_by_username
+from models.user_models import User
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 router = APIRouter(
     prefix='/login',
     tags=['login']
@@ -18,21 +18,22 @@ router = APIRouter(
 @router.post('/')
 async def login(
     session: SessionDeps, 
-    login_user_input: SchemaUserLoginInput, 
+    form_input: Annotated[OAuth2PasswordRequestForm, Depends()], 
     ):
     """
     ログイン用API
     """
-    users: List[User] = fetch_users(session=session, username=login_user_input.username)
-    if not users or len(users) > 1:
+    user: User = resolve_user_by_username(session=session, username=form_input.username)
+    if user is None:
         raise HTTPException(status_code=401, detail='Unauthorization Error')
-    user: User = users[0]
+    
     is_auth: bool = verify_user_credentials(
-        input_user=login_user_input,
-        fetched_user=user
+        fetched_user=user,
+        plain_password=form_input.password
         )
     if not is_auth:
         raise HTTPException(status_code=401, detail='Unauthorization Error')
 
     token = generate_token(username=user.username, email=user.email)
+    
     return {"access_token": token, "token_type": "bearer"}

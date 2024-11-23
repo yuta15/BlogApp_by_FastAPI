@@ -8,8 +8,8 @@ from uuid import UUID, uuid4
 from core.db import get_db
 from core.security import create_password_hash
 from core.setting import DevSetting
-from models.user_models import User, UserOutput
-from models.user_models import SchemaUserRegisterInput
+from models.user_models import User, SchemaUserRegisterInput
+from models.article_models import Article, SchemaArticleInput
 
 
 SessionDeps  = Annotated[Session, Depends(get_db)]
@@ -20,7 +20,7 @@ def create_user(*, session: SessionDeps, user: SchemaUserRegisterInput):
     ユーザー作成
     """
     now = datetime.now(tz=DevSetting().TZ)
-    insert_user = User.model_validate(user, update={
+    insert_user: User = User.model_validate(user, update={
         'uuid':uuid4(),
         'create_at': now,
         'update_at': now,
@@ -67,3 +67,21 @@ def fetch_users(
     users: List[User] = session.exec(stmt).all()
     
     return users
+
+
+def create_article(*, session: SessionDeps, input_article: SchemaArticleInput, user: User):
+    """
+    新しい記事をDBへ保存するための関数
+    """
+    now = datetime.now(tz=DevSetting().TZ)
+    article: Article = Article.model_validate(input_article,update={
+            'id': uuid4(),
+            'creaeted_at': now,
+            'updated_at': now,
+            'user_id': user.uuid
+        },
+    )
+    session.add(article)
+    session.commit()
+    session.refresh(article)
+    return article

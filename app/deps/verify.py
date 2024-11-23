@@ -1,7 +1,6 @@
-from fastapi import Depends, HTTPException
-from typing import Union, List
+from typing import List
 
-from models.user_models import UserOutput, User, SchemaUserLoginInput
+from models.user_models import User
 from deps import crud
 from core.security import verify_password, decode_jwt
 
@@ -31,18 +30,20 @@ def is_user_info_available(
 
 
 def verify_user_credentials(
-    input_user: SchemaUserLoginInput,
-    fetched_user: User
+    fetched_user: User,
+    plain_password: str
     ):
     """
-    ユーザーパスワード認証を行う。
+    パスワード認証を実施後、ユーザーがアクティブであることを確認する。
     args:
-        input_user: SchemaUserLoginInput
+        fetched_user: User
+        plain_password: str
     return:
-        bool
+        True: 有効なユーザー
+        False: 無効なユーザー(ログイン不可)
     """
     is_password_valid = verify_password(
-        plain_password=input_user.plain_password,
+        plain_password=plain_password,
         hashed_password=fetched_user.hashed_password
         )
     if not is_password_valid or not fetched_user.is_active:
