@@ -1,0 +1,13 @@
+fastapi==0.115.4
+pydantic==2.9.2
+sqlmodel==0.0.22
+PyJWT==2.3.0
+PyMySQL==1.1.1
+pytest==8.3.2
+uvicorn==0.32.0
+email_validator==2.2.0
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+passlib==1.7.4
+python-multipart==0.0.17
+cryptography==3.4.8
