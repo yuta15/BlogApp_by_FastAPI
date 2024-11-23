@@ -5,14 +5,14 @@ import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from pydantic import EmailStr
 
-from core.setting import DevSetting
+from core.setting import setting
 
 
 PWD_CONTEXT = CryptContext(schemes=['bcrypt'], deprecated='auto')
-ALGORITHM = DevSetting().ALGORITHM
-SECRET_KEY = DevSetting().SECRET_KEY
-CURRENT_TIME = datetime.now(DevSetting().TZ)
-EXPIRE_DELTA = DevSetting().EXPIRE_DELTA
+ALGORITHM = setting.ALGORITHM
+SECRET_KEY = setting.SECRET_KEY
+CURRENT_TIME = datetime.now(setting.TZ)
+EXPIRE_DELTA = setting.EXPIRE_DELTA
 
 def create_password_hash(password: str):
     """

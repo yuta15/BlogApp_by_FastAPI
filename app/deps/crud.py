@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 
 from core.db import get_db
 from core.security import create_password_hash
-from core.setting import DevSetting
+from core.setting import setting
 from models.user_models import User, SchemaUserRegisterInput
 from models.article_models import Article, SchemaArticleInput
 
@@ -19,7 +19,7 @@ def create_user(*, session: SessionDeps, user: SchemaUserRegisterInput):
     """
     ユーザー作成
     """
-    now = datetime.now(tz=DevSetting().TZ)
+    now = datetime.now(tz=setting.TZ)
     insert_user: User = User.model_validate(user, update={
         'uuid':uuid4(),
         'create_at': now,
@@ -63,7 +63,10 @@ def fetch_users(
         stmt = select(User).where(*filters)
     elif condition == 'or':
         stmt = select(User).where(or_(*filters)) 
-        
+    
+    if not filters:
+        stmt = select(User)
+    
     users: List[User] = session.exec(stmt).all()
     
     return users
@@ -73,8 +76,8 @@ def create_article(*, session: SessionDeps, input_article: SchemaArticleInput, u
     """
     新しい記事をDBへ保存するための関数
     """
-    now = datetime.now(tz=DevSetting().TZ)
-    article: Article = Article.model_validate(input_article,update={
+    now = datetime.now(tz=setting.TZ)
+    article: Article = Article.model_validate(input_article, update={
             'id': uuid4(),
             'creaeted_at': now,
             'updated_at': now,
@@ -85,3 +88,12 @@ def create_article(*, session: SessionDeps, input_article: SchemaArticleInput, u
     session.commit()
     session.refresh(article)
     return article
+
+
+def fetch_articles(
+    *,
+    session: SessionDeps, 
+    ):
+    stmt = select(Article)
+    articles: List[Article] = session.exec(stmt).all()
+    return articles

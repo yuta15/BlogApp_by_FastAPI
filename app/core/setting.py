@@ -3,14 +3,21 @@ import secrets
 from datetime import timezone, timedelta
 
 
-class SettingBase(BaseSettings):
-    ALGORITHM: str = 'HS256'
+class Setting(BaseSettings):
+    ENV: str
+    ALGORITHM: str
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_HOSTNAME: str
+    DB_PORT: str
+    DB_NAME:str
     SECRET_KEY: str = secrets.token_hex()
     TZ: timezone = timezone(timedelta(hours=+9))
-    
-    
-class DevSetting(SettingBase):
-    DB_URL: str = 'sqlite:///test.db'
-    ENV: str = 'Dev'
     EXPIRE_DELTA: timedelta = timedelta(minutes=15)
     
+    @property
+    def DB_URL(self) -> str:
+        return f'mysql+pymysql://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOSTNAME}:{self.DB_PORT}/{self.DB_NAME}'
+
+
+setting = Setting()

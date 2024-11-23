@@ -1,11 +1,13 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, TEXT
 from datetime import datetime
 from uuid import UUID
+from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy import Column
 
 
 class ArticleBase(SQLModel):
     title: str = Field(max_length=150)
-    body: str
+    body: str = Field(sa_column=Column(LONGTEXT))
 
 
 class Article(ArticleBase, table=True):

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import List
 
 from core.security import decode_jwt
-from deps.crud import SessionDeps, create_article
+from deps.crud import SessionDeps, create_article, fetch_articles
 from deps.oauth import oauth2_scheme
 from deps.resolve import resolve_user_by_jwt
 from models.article_models import Article, SchemaArticleInput, SchemaArticleOutput
@@ -35,6 +36,11 @@ async def new_article(
     created_article: Article = create_article(session=session, input_article=article, user=user)
     return created_article
 
+
+@router.get('/list')
+async def article_list(session: SessionDeps,):
+    articles: List[Article] = fetch_articles(session=session)
+    return articles
 
 # 記事削除API
     # ユーザー識別の上、実施。
