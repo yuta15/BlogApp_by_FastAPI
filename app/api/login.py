@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import List, Annotated
 
-from core.security import generate_token
-from deps.crud import SessionDeps, fetch_users
-from deps.verify import verify_user_credentials
-from deps.resolve import resolve_user_by_username
-from models.user_models import User
+from app.core.security import generate_token
+from app.deps.crud import SessionDeps, fetch_users
+from app.deps.verify import verify_user_credentials
+from app.deps.resolve import resolve_user_by_username
+from app.models.user_models import User
 
 
 router = APIRouter(

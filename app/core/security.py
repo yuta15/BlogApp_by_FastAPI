@@ -5,7 +5,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from pydantic import EmailStr
 
-from core.setting import setting
+from app.core.setting import setting
 
 
 PWD_CONTEXT = CryptContext(schemes=['bcrypt'], deprecated='auto')

@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
-from core.security import decode_jwt
-from deps.crud import SessionDeps, create_article, fetch_articles
-from deps.oauth import oauth2_scheme
-from deps.resolve import resolve_user_by_jwt
-from models.article_models import Article, SchemaArticleInput, SchemaArticleOutput
-from models.user_models import User
+from app.core.security import decode_jwt
+from app.deps.crud import SessionDeps, create_article, fetch_articles
+from app.deps.oauth import oauth2_scheme
+from app.deps.resolve import resolve_user_by_jwt
+from app.models.article_models import Article, SchemaArticleInput, SchemaArticleOutput
+from app.models.user_models import User
 
 
 router = APIRouter(

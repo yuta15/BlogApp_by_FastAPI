@@ -5,11 +5,11 @@ from typing import Annotated, List, Literal, Optional
 from pydantic import EmailStr
 from uuid import UUID, uuid4
 
-from core.db import get_db
-from core.security import create_password_hash
-from core.setting import setting
-from models.user_models import User, SchemaUserRegisterInput
-from models.article_models import Article, SchemaArticleInput
+from app.core.db import get_db
+from app.core.security import create_password_hash
+from app.core.setting import setting
+from app.models.user_models import User, SchemaUserRegisterInput
+from app.models.article_models import Article, SchemaArticleInput
 
 
 SessionDeps  = Annotated[Session, Depends(get_db)]

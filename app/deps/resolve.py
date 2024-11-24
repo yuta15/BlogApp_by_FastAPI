@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import Depends
 
-from deps.oauth import oauth2_scheme
-from core.security import decode_jwt
-from deps.crud import fetch_users, SessionDeps
+from app.deps.oauth import oauth2_scheme
+from app.core.security import decode_jwt
+from app.deps.crud import fetch_users, SessionDeps
 
 
 def resolve_user_by_username(

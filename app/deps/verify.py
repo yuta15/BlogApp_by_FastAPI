@@ -1,8 +1,8 @@
 from typing import List
 
-from models.user_models import User
-from deps import crud
-from core.security import verify_password, decode_jwt
+from app.models.user_models import User
+from app.deps import crud
+from app.core.security import verify_password, decode_jwt
 
 
 def is_user_info_available(

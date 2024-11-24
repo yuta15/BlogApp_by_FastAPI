@@ -1,9 +1,9 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from models.user_models import SchemaUserRegisterInput, SchemaUserRegisterOutput
-from deps.crud import SessionDeps, create_user, fetch_users
-from deps import verify
+from app.models.user_models import SchemaUserRegisterInput, SchemaUserRegisterOutput
+from app.deps.crud import SessionDeps, create_user, fetch_users
+from app.deps import verify
 
 
 router = APIRouter(
