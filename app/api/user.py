@@ -23,3 +23,5 @@ async def register(session: SessionDeps, user_input:SchemaUserRegisterInput) -> 
     
     output_user = create_user(session=session, user=user_input)
     return output_user
+
+

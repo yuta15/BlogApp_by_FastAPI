@@ -8,7 +8,8 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - ./app/.env
     networks:
@@ -36,12 +37,16 @@ services:
       - type: bind
         source: ./db/conf.d
         target: /etc/mysql/conf.d
-
     networks:
       backend:
         ipv4_address: 172.18.0.100
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 60s
 
-        
 networks:
   frontend:
     ipam:
