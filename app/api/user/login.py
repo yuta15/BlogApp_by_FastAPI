@@ -3,10 +3,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from typing import List, Annotated
 
 from app.core.security import generate_token
-from app.deps.crud import SessionDeps, fetch_users
-from app.deps.verify import verify_user_credentials
-from app.deps.resolve import resolve_user_by_username
-from app.models.user_models import User
+from app.deps.crud import SessionDeps
+from app.utils.verify import verify_user_credentials
+from app.utils.resolve import resolve_user_by_username
+from app.models.user.user_models import User
 
 
 router = APIRouter(

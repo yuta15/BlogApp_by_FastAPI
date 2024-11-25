@@ -1,17 +1,25 @@
-from typing import Annotated
 from fastapi import Depends
+from typing import Literal
 
-from app.deps.oauth import oauth2_scheme
 from app.core.security import decode_jwt
-from app.deps.crud import fetch_users, SessionDeps
+from app.deps.oauth import oauth2_scheme
+from app.deps.crud import SessionDeps
+from app.utils import crud, verify
+from app.models.user.user_models import User
+from app.models.superuser.superuser import Superuser
 
 
 def resolve_user_by_username(
-    *, 
+    *,
+    table_model: Literal[User, Superuser],
     session: SessionDeps,
     username: str
     ):
-    users = fetch_users(session=session, username=username)
+    users = crud.fetch_users(
+        table_model=table_model, 
+        session=session, 
+        username=username
+        )
     if not users or len(users) > 1:
         return None
     return users[0]

@@ -14,6 +14,7 @@ SECRET_KEY = setting.SECRET_KEY
 CURRENT_TIME = datetime.now(setting.TZ)
 EXPIRE_DELTA = setting.EXPIRE_DELTA
 
+
 def create_password_hash(password: str):
     """
     パスワードをハッシュ化する関数

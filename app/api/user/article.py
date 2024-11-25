@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
 from app.core.security import decode_jwt
-from app.deps.crud import SessionDeps, create_article, fetch_articles
+from app.deps.crud import SessionDeps
 from app.deps.oauth import oauth2_scheme
-from app.deps.resolve import resolve_user_by_jwt
-from app.models.article_models import Article, SchemaArticleInput, SchemaArticleOutput
-from app.models.user_models import User
+from app.utils import crud, resolve
+from app.models.user.article_models import Article, SchemaArticleInput, SchemaArticleOutput
+from app.models.user.user_models import User
 
 
 router = APIRouter(
@@ -30,16 +30,16 @@ async def new_article(
     """
     記事を投稿するための関数
     """
-    user: User = resolve_user_by_jwt(session=session, token=token)
+    user: User = resolve.resolve_user_by_jwt(session=session, token=token)
     if user is None:
         raise HTTPException()
-    created_article: Article = create_article(session=session, input_article=article, user=user)
+    created_article: Article = crud.create_article(session=session, input_article=article, user=user)
     return created_article
 
 
 @router.get('/list')
 async def article_list(session: SessionDeps,):
-    articles: List[Article] = fetch_articles(session=session)
+    articles: List[Article] = crud.fetch_articles(session=session)
     return articles
 
 # 記事削除API

@@ -1,0 +1,17 @@
+{
+    "user_data_register_200": [
+        {"username": "use", "email": "user4@example.com", "password": "user4password"},
+        {"username": "user5user5user5user5user5user5user5user5user5user5", "email": "user5@example.com", "password": "user5password"}
+    ],
+    "user_data_register_400": [
+        {"username": "us", "email": "user6@example.com", "password": "user6password"},
+        {"username": "user7user7user7user7user7user7user7user7user7user7u", "email": "user7@example.com", "password": "user7password"},
+        {"username": "user8", "email": "user8example.com", "password": "user8password"},
+        {"username": "user9", "email": "user9example.com", "password": "user9password"}
+    ],
+    "user_data_register_409": [
+        {"username": "user1", "email": "user1@example.com", "password": "user1password"},
+        {"username": "user1", "email": "user10@example.com", "password": "user7password"},
+        {"username": "user11", "email": "user1@example.com", "password": "user7password"}
+    ]
+}

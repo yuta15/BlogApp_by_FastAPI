@@ -1,7 +1,8 @@
 from datetime import datetime
-from pydantic import EmailStr, BaseModel
+from pydantic import EmailStr, BaseModel, ConfigDict
 from uuid import UUID
 from sqlmodel import SQLModel, Field
+from fastapi.exceptions import RequestValidationError
 
 
 class UserModel(SQLModel):
@@ -18,12 +19,10 @@ class User(UserModel, table=True):
 
 
 class UserOutput(UserModel):
+    model_config = ConfigDict(extra='ignore', )
     uuid: UUID
     create_at: datetime
     update_at: datetime
-    
-    class Config:
-        orm_mode = True
 
 
 class SchemaUserBase(BaseModel):
@@ -32,7 +31,7 @@ class SchemaUserBase(BaseModel):
 
 class SchemaUserRegisterInput(SchemaUserBase):
     email: EmailStr
-    plain_password: str = Field(min_length=8, max_length=100)
+    password: str = Field(min_length=8, max_length=100)
 
 
 class SchemaUserRegisterOutput(SchemaUserBase):

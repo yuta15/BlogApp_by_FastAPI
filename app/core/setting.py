@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 import secrets
 from datetime import timezone, timedelta
+from passlib.context import CryptContext
 
 
 class Setting(BaseSettings):
@@ -21,3 +22,4 @@ class Setting(BaseSettings):
 
 
 setting = Setting()
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')

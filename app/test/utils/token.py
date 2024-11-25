@@ -5,7 +5,7 @@ import jwt
 
 from app.core.db import get_db
 from app.core.security import setting
-from app.models.user_models import User
+from app.models.user.user_models import User
 
 
 def generate_tokens(users: List[User]) -> List[str]:

@@ -6,7 +6,7 @@ from uuid import uuid4
 from app.core.db import engin, get_db
 from app.core.setting import setting
 from app.core.security import PWD_CONTEXT
-from app.models.user_models import User
+from app.models.user.user_models import User
 from app.test.init_data import init_users_data
 
 

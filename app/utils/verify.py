@@ -1,15 +1,17 @@
-from typing import List
+from typing import List, Literal
 
-from app.models.user_models import User
-from app.deps import crud
-from app.core.security import verify_password, decode_jwt
+from app.models.user.user_models import User
+from app.models.superuser.superuser import Superuser
+from app.deps.crud import SessionDeps
+from app.utils import crud, resolve
+from app.core.security import verify_password
 
 
 def is_user_info_available(
     *, 
+    table_model: Literal[User, Superuser],
     session: crud.SessionDeps, 
-    username: str | None, 
-    email: str | None
+    **kwargs: dict,
     ):
     """
     値が使用されていないことを確認する関数
@@ -21,16 +23,23 @@ def is_user_info_available(
         ユーザー情報が使用されていない: True
         ユーザー情報が使用されている: False
     """
-    users: List[User] = crud.fetch_users(
-        session=session, 
-        username=username, 
-        email=email, 
-        condition='or')
+    allowed_keys = ['uuid', 'username', 'email']
+    dict_keys = kwargs.keys()
+    bad_keys = [key for key in dict_keys if key in allowed_keys]
+    if not bad_keys:
+        return False
+    
+    users: List[table_model] = crud.fetch_users(
+        session=session,
+        table_model=table_model,
+        condition='or',
+        **kwargs,
+    )
     return not bool(users)
 
 
 def verify_user_credentials(
-    fetched_user: User,
+    fetched_user: User | Superuser,
     plain_password: str
     ):
     """
