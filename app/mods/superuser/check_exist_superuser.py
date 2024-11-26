@@ -12,7 +12,7 @@ def check_exist_user(
     *,
     session: SessionDeps,
     user_input: SuperuserInput
-    ) -> bool:
+    ) -> None:
     """
     DB内の情報を確認し、ユーザー名、emailが重複しないことを確認する。
     args: 
@@ -20,10 +20,11 @@ def check_exist_user(
         user_input: UserModel
         
     return:
-        bool
+        None
     
     Exception:
-
+        HTTP_409_CONFLICT
+        重複したデータが存在したらConflictを発砲
     """
     users: List[Superuser] = fetch_users(
         session=session,

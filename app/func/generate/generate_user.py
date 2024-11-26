@@ -27,7 +27,6 @@ def generate_user(
         user:User
             ユーザー情報
     """
-    print()
     user: User = User.model_validate(
         {
             'uuid': uuid4(),

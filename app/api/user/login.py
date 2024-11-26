@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from typing import List, Annotated
+from typing import Annotated
 
-from app.core.security import generate_token
+from app.mods.user import fetch_user, create_token, auth_user
 from app.deps.crud import SessionDeps
-from app.utils.verify import verify_user_credentials
-from app.utils.resolve import resolve_user_by_username
 from app.models.user.user_models import User
 
 
@@ -22,18 +20,12 @@ async def login(
     ):
     """
     ログイン用API
+    Formからユーザー名とパスワードを取得する。
     """
-    user: User = resolve_user_by_username(session=session, username=form_input.username)
-    if user is None:
-        raise HTTPException(status_code=401, detail='Unauthorization Error')
-    
-    is_auth: bool = verify_user_credentials(
-        fetched_user=user,
-        plain_password=form_input.password
+    user: User = fetch_user.fetch_user(
+        session=session, 
+        input_username=form_input.username
         )
-    if not is_auth:
-        raise HTTPException(status_code=401, detail='Unauthorization Error')
-
-    token = generate_token(username=user.username, email=user.email)
-    
-    return {"access_token": token, "token_type": "bearer"}
+    auth_user.auth_user(form_input.password, user=user)
+    token:str = create_token.create_token(user=user)
+    return {'access_token':token, 'token_type':"bearer"}

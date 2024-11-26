@@ -4,7 +4,7 @@ from app.func.generate.generate_user import generate_user
 from app.func.insert.insert_user import insert_user
 from app.models.superuser.superuser import Superuser, SuperuserInput
 
-def create_user(
+def create_superuser(
     *,
     session: SessionDeps,
     input_user: SuperuserInput,

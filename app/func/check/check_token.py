@@ -22,7 +22,7 @@ def check_token(
             その他エラーが発生した場合にraise
     """
     try:
-        decoded_token = jwt.decode(
+        payload = jwt.decode(
             jwt=input_jwt, 
             key=setting.SECRET_KEY, 
             algorithms=setting.ALGORITHM
@@ -32,5 +32,5 @@ def check_token(
     except:
         HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error. Please try again later.')
     else:
-        subject = decoded_token.get('subject')
+        subject = payload.get('sub')
         return subject

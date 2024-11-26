@@ -11,10 +11,10 @@ app = FastAPI()
 app.add_exception_handler(RequestValidationError, request_validation_handler)
 
 # routerのinclude処理
+app.include_router(article.router)
 app.include_router(general_user.router)
 app.include_router(login.router)
-app.include_router(article.router)
 
-# superuserのinclude処理
-app.include_router(superuser_login.router)
-app.include_router(management.router)
+# # superuserのinclude処理
+# app.include_router(superuser_login.router)
+# app.include_router(management.router)

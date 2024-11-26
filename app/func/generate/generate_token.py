@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 import jwt
 
-from core.setting import setting
+from app.core.setting import setting
 
 
 def generate_token(payload: dict):
