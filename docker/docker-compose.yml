@@ -4,7 +4,7 @@ services:
     hostname: app
     build: 
       context: ../
-      dockerfile: docker/app/Dockerfile
+      dockerfile: docker/app/dockerfile
     ports:
       - 8000:8000
     depends_on:
@@ -23,7 +23,9 @@ services:
         target: /src/app
   db:
     container_name: dev_db
-    image: mysql:latest
+    build: 
+      context: ../
+      dockerfile: docker/db/dockerfile
     hostname: dev
     restart: always
     ports:
@@ -37,6 +39,9 @@ services:
       - type: bind
         source: ./db/conf.d
         target: /etc/mysql/conf.d
+      - type: bind
+        source: ./db/initdb.d
+        target: /docker-entrypoint-initdb.d
     networks:
       backend:
         ipv4_address: 172.18.0.100
