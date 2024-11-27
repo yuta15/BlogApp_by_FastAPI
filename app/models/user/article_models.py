@@ -1,7 +1,7 @@
-from sqlmodel import SQLModel, Field, BINARY
+from sqlmodel import SQLModel, Field
 from datetime import datetime
 from uuid import UUID
-from sqlalchemy.dialects.mysql import LONGBLOB
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Column
 
 
@@ -12,7 +12,7 @@ class ArticleBase(SQLModel):
 
 class Article(ArticleBase, table=True):
     id: UUID = Field(primary_key=True, index=True)
-    body: bytes = Field(sa_column=Column(LONGBLOB))
+    body: str = Field(sa_column=Column(LONGTEXT))
     creaeted_at: datetime
     updated_at: datetime
     is_public: bool = Field(default=False)

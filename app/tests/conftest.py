@@ -3,11 +3,10 @@ from fastapi.testclient import TestClient
 from typing import List
 
 from app.main import app
-from app.test.utils.db import db_init
-from app.test.utils.token import create_token_headers
 
 
-@pytest.fixture(scope='session', autouse=True)
+
+@pytest.fixture(scope='module', autouse=True)
 def init_db():
     db_init()
     yield
