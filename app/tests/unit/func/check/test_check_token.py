@@ -55,33 +55,26 @@ def test_check_token_success(username, email, delta):
     ],
     [
         pytest.param(
-            'ExpiredSignatureError',
+            ExpiredSignatureError,
             datetime.now(timezone(timedelta(hours=+9))),
             timedelta(minutes=-15),
             'dev-secret-key',
             'Signature has expired'
         ),
         pytest.param(
-            'InvalidSignatureError',
+            InvalidSignatureError,
             datetime.now(timezone(timedelta(hours=+9))),
             timedelta(minutes=15),
             'test_secret',
             'Signature verification failed'
         ),
         pytest.param(
-            'DecodeError',
+            DecodeError,
             datetime.now(timezone(timedelta(hours=+9)))+timedelta(days=+15),
             timedelta(minutes=-15),
             'dev-secret-key',
-            'decode failed'
-        ),
-        pytest.param(
-            'InvalidTokenError',
-            datetime.now(timezone(timedelta(hours=+9)))+timedelta(days=+15),
-            timedelta(minutes=-15),
-            'dev-secret-key',
-            ''
-        ),
+            'Not enough segments'
+        )
     ]
 )
 def test_check_token_failed(ext, iat, delta, secret_key, result):
@@ -97,7 +90,7 @@ def test_check_token_failed(ext, iat, delta, secret_key, result):
         time_delta=delta)
     token = generate_token(payload=payload, secret_key=secret_key)
     
-    if ext == 'DecodeError':
+    if ext == DecodeError:
         token = ''
     
     with pytest.raises(
@@ -105,7 +98,7 @@ def test_check_token_failed(ext, iat, delta, secret_key, result):
             ExpiredSignatureError,
             InvalidSignatureError,
             DecodeError,
-            InvalidTokenError
         )
         ) as e:
         check_token(token)
+    assert str(e.value) == result

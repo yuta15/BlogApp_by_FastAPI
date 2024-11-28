@@ -1,5 +1,3 @@
-from fastapi import HTTPException
-from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, DecodeError, InvalidTokenError
 
@@ -27,7 +25,7 @@ def check_token(
             key=setting.SECRET_KEY, 
             algorithms=setting.ALGORITHM
         )
-    except (ExpiredSignatureError, InvalidSignatureError, DecodeError, InvalidTokenError) as e:
+    except (ExpiredSignatureError, InvalidSignatureError, DecodeError) as e:
         raise e
     else:
         subject = payload.get('sub')

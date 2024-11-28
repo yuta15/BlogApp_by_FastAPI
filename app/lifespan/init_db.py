@@ -1,9 +1,7 @@
 from contextlib import asynccontextmanager
 from sqlmodel import Session, create_engine
-import logging
 
 from app.core.setting import setting
-from app.core.db import get_db
 from app.lifespan.init_data import user_init_data, superuser_init_data
 from app.models.user.user_models import User
 from app.models.superuser.superuser import Superuser

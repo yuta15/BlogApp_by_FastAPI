@@ -1,6 +1,5 @@
 import os
 import jwt
-import json
 
 from app.tests.mods.generate_payload import generate_payload
 
