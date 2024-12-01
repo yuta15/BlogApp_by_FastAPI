@@ -1,0 +1,45 @@
+name: Run test when pushed code
+run-name: ${{ github.actor }} is pushed!!!!!!
+
+on: [push]
+
+jobs:
+    Blog_app_job:
+        name: Blog app job
+        runs-on: ubuntu-latest
+        env:
+            ENV: 'Dev'
+            ALGORITHM: 'HS256'
+            DB_USERNAME: 'testuser'
+            DB_PASSWORD: 'testuser1234'
+            DB_HOSTNAME: 'localhost'
+            DB_PORT: '3306'
+            DB_NAME: 'main'
+        services:
+            db:
+                image: mysql:latest
+                ports:
+                    - 3306:3306
+                env:
+                    MYSQL_ROOT_PASSWORD: rootuserpassword
+                    MYSQL_DATABASE: main
+                    MYSQL_USER: testuser
+                    MYSQL_PASSWORD: testuser1234
+                    options: >-
+                        --health-cmd="mysqladmin ping --silent"
+                        --health-interval=10s
+                        --health-timeout=5s
+                        --health-retries=3
+                        
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v4
+            
+            - name: install dependencies
+              run: apt install -y &&\
+                   apt update -y &&\
+                   pip install --upgrade pip &&\
+                   pip install -r requirements.txt
+            
+            - name: execute test
+              run: pytest -svv
