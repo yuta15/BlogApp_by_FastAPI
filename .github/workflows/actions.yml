@@ -34,6 +34,9 @@ jobs:
         steps:
             - name: Check out repository code
               uses: actions/checkout@v4
+
+            - name: check current_dir
+              run: ls -la
             
             - name: install dependencies
               working-directory: BlogApp_by_FastAPI
