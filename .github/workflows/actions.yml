@@ -39,11 +39,11 @@ jobs:
               run: ls -la
             
             - name: install dependencies
-              working-directory: BlogApp_by_FastAPI
+              working-directory: docker/app
               run: |
+                   ls -la &&\
                    pip install --upgrade pip &&\
                    pip install -r requirements.txt
             
             - name: execute test
-              working-directory: BlogApp_by_FastAPI            
               run: pytest -svv
