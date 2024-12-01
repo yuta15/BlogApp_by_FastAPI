@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select, or_
 from typing import Literal, List
 
@@ -41,7 +42,6 @@ def fetch_users(
     Exception:
         何らかの影響でサーバーから正常に応答がない場合は、HTTP_500_INTERNAL_SERVER_ERRORを返す。
     """
-    
     filters = []
     for column, field in kwargs.items():
         if column == 'uuid':
@@ -50,7 +50,6 @@ def fetch_users(
             filters.append(table_model.username == field)
         elif column == 'email':
             filters.append(table_model.email == field)
-    
     if not filters:
         stmt = select(table_model)
     
@@ -61,11 +60,9 @@ def fetch_users(
     
     try:
         users: List[User | Superuser | None] = session.exec(stmt).all()
-    except:
-        raise HTTPException(
-            status_code=HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail='Internal Server Error. Please try again later.'
-        )
+        print(users)
+    except Exception as e:
+        raise e
     else:
         if not users:
             return None
