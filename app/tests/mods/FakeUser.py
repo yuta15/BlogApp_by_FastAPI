@@ -1,9 +1,7 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 from pydantic import EmailStr
-from sqlmodel import select, delete
-from typing import Any, Optional
 import jwt
 from sqlalchemy.exc import (
     DBAPIError, 
@@ -12,7 +10,7 @@ from sqlalchemy.exc import (
     InvalidRequestError,
     )
 
-from app.tests.mods.get_db import get_db
+from app.core.setting import setting
 from app.models.user.user_models import User
 
 class FakeUser:
@@ -33,16 +31,17 @@ class FakeUser:
                 password: str
                 email: EmailStr
         """
-        self.uuid = uuid4()
-        self.username = user_params.get('username')
-        self.password = user_params.get('password')
-        self.email = user_params.get('email')
-        self.tz = timezone(timedelta(hours=+9))
-        self.create_at = self._time()
-        self.update_at = self._time()
-        self.token = None
-        self.hashed_password = self._hasher(self.password)
-        self.user = self._generate_db_mode()
+        self.uuid: UUID = uuid4()
+        self.username: str = user_params.get('username')
+        self.password: str = user_params.get('password')
+        self.email: EmailStr = user_params.get('email')
+        self.tz: timezone = timezone(timedelta(hours=+9))
+        self.create_at: datetime = self._time()
+        self.update_at: datetime = self._time()
+        self.payload: dict = None
+        self.token: str = None
+        self.hashed_password: str = self._hasher(self.password)
+        self.user: User = self._generate_db_mode()
 
 
     def _hasher(self, password) -> str:
@@ -59,22 +58,43 @@ class FakeUser:
         self.user = self._generate_db_mode()
 
 
-    def generate_token(self, payload, algorithm, secret_key) -> str:
+    def generate_token(self, **kwargs) -> str:
+        """
+        tokenを生成する。
+        生成されたTokenはオブジェクトにも設定される。
+        
+        kwargs parameters:
+            payload: object [require]
+            key: secret_key [Default: setting.SECRET_KEY]
+            algorithm: [str] [Default: setting.ALGORITHM]
+        """
         token: str = jwt.encode(
-            payload=payload,
-            key=secret_key,
-            algorithm=algorithm
+            payload = kwargs.get('payload'),
+            key = kwargs.get('secret_key', setting.SECRET_KEY),
+            algorithm = kwargs.get('algorithm', setting.ALGORITHM)
         )
         self.token = token
+        return token
 
 
-    def generate_payload(self, time_delta: timedelta, subject: dict):
-        now = datetime.now(tz=self.tz)
+    def generate_payload(self, **kwargs) -> dict:
+        """
+        iat, exp, subject情報をkwargsに含めることができる。
+        
+        kwargs parameters:
+            iat: datetime [Default: datetime.now(tz=self.tz)]
+            time_delta: timedelta [require]
+            subject: dict
+        """
+        iat: datetime = kwargs.get('iat', datetime.now(tz=self.tz))
+        exp: datetime = iat + kwargs.get('time_delta')
+        subject: dict = kwargs.get('subject')
         payload = {
-            'iat': now,
-            'exp': now + time_delta,
+            'iat': iat,
+            'exp': exp,
             'sub': subject
         }
+        self.payload = payload
         return payload
 
 
@@ -90,7 +110,7 @@ class FakeUser:
                 'create_at': self.create_at,
                 'update_at': self.update_at,
                 'hashed_password': self.hashed_password,
-                'is_active': False
+                'is_active': True
             }
         )
         return user

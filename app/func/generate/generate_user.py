@@ -27,15 +27,19 @@ def generate_user(
         user:User
             ユーザー情報
     """
-    user: User = User.model_validate(
-        {
-            'uuid': uuid4(),
-            'username': kwargs.get('username').encode('utf-8'),
-            'email': kwargs.get('email').encode('utf-8'),
-            'create_at': datetime.now(setting.TZ),
-            'update_at': datetime.now(setting.TZ),
-            'hashed_password': kwargs.get('hashed_password'),
-            'is_active': kwargs.get('is_active', True)
-        }
-    )
-    return user
+    try:
+        user: User = User.model_validate(
+            {
+                'uuid': uuid4(),
+                'username': kwargs.get('username').encode('utf-8'),
+                'email': kwargs.get('email').encode('utf-8'),
+                'create_at': datetime.now(setting.TZ),
+                'update_at': datetime.now(setting.TZ),
+                'hashed_password': kwargs.get('hashed_password'),
+                'is_active': kwargs.get('is_active', True)
+            }
+        )
+    except ValueError as e:
+        raise ValueError('Validation Error!!!')
+    else:
+        return user

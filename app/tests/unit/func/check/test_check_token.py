@@ -1,104 +1,83 @@
-from fastapi import HTTPException
 import pytest
-from datetime import timedelta
 from datetime import datetime, timedelta, timezone
 from jwt.exceptions import (
     ExpiredSignatureError, 
     InvalidSignatureError, 
     DecodeError,
-    InvalidTokenError
     )
 
-from app.tests.mods.generate_payload import generate_payload
-from app.tests.mods.generate_token import generate_token
-
-
+from app.core.setting import setting
 from app.func.check.check_token import check_token
 
 
 @pytest.mark.parametrize(
     [
-        'username',
-        'email',
-        'delta',
-    ],
-    [
-        pytest.param(
-            'user1',
-            'use1@example.com',
-            timedelta(minutes=15),
-        )
-    ]
-)
-def test_check_token_success(username, email, delta):
-    """
-    
-    """
-    payload = generate_payload(
-        username, 
-        email, 
-        datetime.now(timezone(timedelta(hours=+9))), 
-        delta
-        )
-    token = generate_token(payload=payload)
-    assert check_token(token) == payload.get('sub')
-    
-    
-    
-@pytest.mark.parametrize(
-    [
-        'ext',
+        'user_params',
+        'extension',
         'iat',
-        'delta',
+        'time_delta',
         'secret_key',
-        'result',
+        'result_message'
     ],
     [
         pytest.param(
+            {'username': 'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
+            None,
+            datetime.now(tz=timezone(timedelta(hours=+9))),
+            timedelta(minutes=+15),
+            setting.SECRET_KEY,
+            None
+        ),
+        pytest.param(
+            {'username': 'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
             ExpiredSignatureError,
-            datetime.now(timezone(timedelta(hours=+9))),
+            datetime.now(tz=timezone(timedelta(hours=+9))),
             timedelta(minutes=-15),
-            'dev-secret-key',
+            setting.SECRET_KEY,
             'Signature has expired'
         ),
         pytest.param(
-            InvalidSignatureError,
-            datetime.now(timezone(timedelta(hours=+9))),
-            timedelta(minutes=15),
+            {'username': 'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
+            ExpiredSignatureError,
+            datetime.now(tz=timezone(timedelta(hours=+9))),
+            timedelta(minutes=-15),
             'test_secret',
             'Signature verification failed'
         ),
         pytest.param(
+            {'username': 'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
             DecodeError,
-            datetime.now(timezone(timedelta(hours=+9)))+timedelta(days=+15),
-            timedelta(minutes=-15),
-            'dev-secret-key',
+            datetime.now(tz=timezone(timedelta(hours=+9))),
+            timedelta(minutes=+15),
+            setting.SECRET_KEY,
             'Not enough segments'
-        )
+        ),
     ]
 )
-def test_check_token_failed(ext, iat, delta, secret_key, result):
-    """
-    
-    """
-    username = 'user1'
-    email = 'user1@example.com'
-    payload = generate_payload(
-        username=username,
-        email=email,
-        iat=iat,
-        time_delta=delta)
-    token = generate_token(payload=payload, secret_key=secret_key)
-    
-    if ext == DecodeError:
-        token = ''
-    
-    with pytest.raises(
-        (
-            ExpiredSignatureError,
-            InvalidSignatureError,
-            DecodeError,
-        )
+def test_check_token(
+    user_params,
+    extension,
+    iat,
+    time_delta,
+    secret_key,
+    result_message,
+    user_fixture
+):
+    user = user_fixture(user_params)
+    subject = {'username': user.username, 'email': user.email}
+    payload = user.generate_payload(iat=iat, time_delta=time_delta, subject=subject)
+    token = user.generate_token(payload=payload, secret_key=secret_key)
+    if extension == DecodeError:
+        token = token[:len(token)//2]
+    if extension is None:
+        assert check_token(token) == subject
+    else:
+        with pytest.raises(
+            (
+                ExpiredSignatureError,
+                InvalidSignatureError,
+                DecodeError
+            )
         ) as e:
-        check_token(token)
-    assert str(e.value) == result
+            check_token(token)
+        assert str(e.value) == result_message

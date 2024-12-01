@@ -1,30 +1,31 @@
 import pytest
 
-from app.tests.mods.generate_hashed_password import generate_hashed_password
 from app.func.check.check_password import check_password
 
 @pytest.mark.parametrize(
     [
-        'password',
-        'hashed_password',
-        'return_bool'
+        'user_params',
+        'is_valid'
     ],
     [
         pytest.param(
-            'user1password',
-            None,
-            False
+            {'username':'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
+            True
         ),
         pytest.param(
-            'user2password',
-            generate_hashed_password('user2password'),
-            True
+            {'username':'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
+            False
         ),
     ]
 )
-def test_check_password(password, hashed_password, return_bool):
+def test_check_password(user_params, is_valid, user_fixture):
     """
     ハッシュパスワードはすべてuser1passwordのもの
     """
+    user = user_fixture(user_params)
+    password = user.password
+    hashed_password = user.hashed_password
+    if not is_valid:
+        password = 'testFailedPassword'
     is_ckecked = check_password(plain_password=password, hashed_password=hashed_password)
-    assert is_ckecked == return_bool
+    assert is_ckecked == is_valid
