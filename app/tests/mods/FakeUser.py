@@ -84,7 +84,7 @@ class FakeUser:
         """
         user = User.model_validate(
             {
-                'uuid': uuid4(),
+                'uuid': self.uuid,
                 'username': self.username,
                 'email': self.email,
                 'create_at': self.create_at,

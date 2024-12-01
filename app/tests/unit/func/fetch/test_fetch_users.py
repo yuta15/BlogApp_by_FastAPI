@@ -81,6 +81,5 @@ def test_fetch_user_success_by_uuid(
         table_model = User,
         **search_val
     )
-    
     assert users == [user.user]
     user.delete_user(session=session)

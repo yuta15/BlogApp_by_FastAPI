@@ -60,7 +60,6 @@ def fetch_users(
     
     try:
         users: List[User | Superuser | None] = session.exec(stmt).all()
-        print(users)
     except Exception as e:
         raise e
     else:
