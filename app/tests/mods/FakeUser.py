@@ -10,8 +10,9 @@ from sqlalchemy.exc import (
     InvalidRequestError,
     )
 
-from app.core.setting import setting
+from app.core.setting import setting, pwd_context
 from app.models.user.user_models import User
+
 
 class FakeUser:
     """
@@ -40,13 +41,12 @@ class FakeUser:
         self.update_at: datetime = self._time()
         self.payload: dict = None
         self.token: str = None
-        self.hashed_password: str = self._hasher(self.password)
+        self.hashed_password: str = pwd_context.hash(self.password)
         self.user: User = self._generate_db_mode()
-
-
-    def _hasher(self, password) -> str:
-        context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-        return context.hash(password)
+        
+        
+    def verify_hash(self, plain_password, hash_password):
+        return pwd_context.verify(secret=plain_password, hash=hash_password)
 
 
     def _time(self) -> datetime:

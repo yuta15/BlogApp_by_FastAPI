@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 import jwt
 
+
 from app.core.setting import setting
 
 
@@ -18,16 +19,10 @@ def generate_token(payload: dict):
             
     Exception
     """
-    try:
-        token: str = jwt.encode(
-            payload=payload,
-            key=setting.SECRET_KEY,
-            algorithm=setting.ALGORITHM
-            )
-    except:
-        raise HTTPException(
-            status_code=HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail='Internal Server Error. Please try again later.'
-            )
-    else:
-        return token
+
+    token: str = jwt.encode(
+        payload=payload,
+        key=setting.SECRET_KEY,
+        algorithm=setting.ALGORITHM
+        )
+    return token

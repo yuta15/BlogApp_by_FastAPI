@@ -1,6 +1,4 @@
 from datetime import datetime
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
-from typing import Literal
 
 from app.core.setting import setting
 from app.models.user.user_models import User
