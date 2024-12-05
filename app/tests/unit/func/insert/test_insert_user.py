@@ -1,7 +1,6 @@
 import pytest
 from sqlalchemy.exc import DBAPIError, OperationalError, IntegrityError
 
-from app.tests.patch.ExceptionMocker import ExceptionMocker
 from app.tests.mods.get_db import get_db
 from app.func.insert.insert_user import insert_user
 
