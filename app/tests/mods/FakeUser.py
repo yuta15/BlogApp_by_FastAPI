@@ -1,8 +1,9 @@
 from uuid import uuid4, UUID
-from passlib.context import CryptContext
+from sqlmodel import select
 from datetime import datetime, timezone, timedelta
 from pydantic import EmailStr
 import jwt
+from sqlalchemy.exc import OperationalError, InterfaceError, DBAPIError
 from sqlalchemy.exc import (
     DBAPIError, 
     DatabaseError, 
@@ -149,3 +150,14 @@ class FakeUser:
             InvalidRequestError,
         ) as e:
             raise e
+        
+        
+    def fetch_user_by_username(self, session):
+        """
+        ユーザー名からデータを取得するための関数
+        """
+        try:
+            stmt = select(self.user).where(username=self.username)
+            session.exec(stmt).all()
+        except (OperationalError, DBAPIError, InterfaceError) as e:
+            raise e(f'{e}: In FakeUser class')

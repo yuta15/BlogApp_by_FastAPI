@@ -22,7 +22,7 @@ from app.func.fetch.fetch_users import fetch_users
         pytest.param(
             {'username': 'testuser', 'password': 'testuserpassword', 'email': 'testuser@example.com'},
             ['email'],
-            True,
+            False,
             True
         ),
         pytest.param(

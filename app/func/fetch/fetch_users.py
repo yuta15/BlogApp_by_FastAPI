@@ -1,6 +1,4 @@
-from fastapi import HTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import OperationalError, DBAPIError, TimeoutError
 from sqlmodel import select, or_
 from typing import Literal, List
 
@@ -60,8 +58,12 @@ def fetch_users(
     
     try:
         users: List[User | Superuser | None] = session.exec(stmt).all()
-    except Exception as e:
-        raise e
+    except OperationalError as e:
+        raise OperationalError(f'{e}: Can not fetch user data')
+    except DBAPIError as e:
+        raise DBAPIError(f'{e}: Can not fetch user data')
+    except TimeoutError as e:
+        raise DBAPIError(f'{e}: Can not fetch user data')
     else:
         if not users:
             return None
