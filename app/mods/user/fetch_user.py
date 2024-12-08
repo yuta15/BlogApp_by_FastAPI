@@ -5,7 +5,7 @@ from typing import List
 from app.deps.crud import SessionDeps
 from app.func.fetch import fetch_users
 from app.func.check import check_password
-from app.models.user.user_models import User
+from app.models.User import User
 
 
 def fetch_user(

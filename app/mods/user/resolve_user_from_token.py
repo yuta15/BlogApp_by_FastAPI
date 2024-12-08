@@ -7,7 +7,7 @@ from app.deps.oauth import oauth2_scheme
 from app.deps.crud import SessionDeps, get_db
 from app.func.check import check_token
 from app.func.fetch import fetch_users
-from app.models.user.user_models import User
+from app.models.User import User
 
 
 def resolve_user_from_token(
