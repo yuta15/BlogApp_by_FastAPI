@@ -35,7 +35,7 @@ def test_insert_user(
     return_val = insert_user(session=session, user=inser_user_params)
     if not result:
         assert return_val == result
+        user.delete_user(session=session)
     else:
         assert return_val.get('Error') == result
-    
     

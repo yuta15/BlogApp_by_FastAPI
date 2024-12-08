@@ -12,7 +12,7 @@ from sqlalchemy.exc import (
     )
 
 from app.core.setting import setting, pwd_context
-from app.models.user.user_models import User
+from app.models.user.user_models import User, SchemaUserRegisterInput
 
 
 class FakeUser:
@@ -43,8 +43,8 @@ class FakeUser:
         self.payload: dict = None
         self.token: str = None
         self.hashed_password: str = pwd_context.hash(self.password)
-        self.user: User = self._generate_db_mode()
-        
+        self.user: User = self._generate_db_model()
+        self.input_user: SchemaUserRegisterInput = self._generate_input_model()
         
     def verify_hash(self, plain_password, hash_password):
         return pwd_context.verify(secret=plain_password, hash=hash_password)
@@ -97,9 +97,23 @@ class FakeUser:
         }
         self.payload = payload
         return payload
+    
+    
+    def _generate_input_model(self):
+        """
+        ユーザーから受信するデータ
+        """
+        input_user = SchemaUserRegisterInput.model_validate(
+            {
+                'username': self.username,
+                'email': self.email,
+                'password': self.password
+            }
+        )
+        return input_user
 
 
-    def _generate_db_mode(self):
+    def _generate_db_model(self):
         """
         Insert用のデータを生成
         """

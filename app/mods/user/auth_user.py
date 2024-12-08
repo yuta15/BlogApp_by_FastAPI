@@ -1,9 +1,6 @@
 from fastapi import HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
-from typing import List
 
-from app.deps.crud import SessionDeps
-from app.func.fetch import fetch_users
 from app.func.check import check_password
 from app.models.user.user_models import User
 
