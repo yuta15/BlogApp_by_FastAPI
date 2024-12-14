@@ -1,17 +1,15 @@
 from fastapi.security import OAuth2PasswordBearer 
-
 from fastapi import Depends, HTTPException
-from starlette.status import HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
 from sqlmodel import Session
 from typing import List
 
 from app.deps.crud import get_db
-from app.mods.user_mods.auth import decode_token
-from app.mods.user_mods.db import fetch_users
+from app.mods.user.user import take_subject_from_token, fetch_user_data
 from app.models.User import User
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/user/login')
 
 
 def resolve_user_from_token(
@@ -22,17 +20,10 @@ def resolve_user_from_token(
     """
     Token情報からToken情報を取得する。
     """
-    subject = decode_token.decode_token(token)
-    users: List[User] = fetch_users.fetch_users(session=session, username=subject.get('username'))
-    
-
-
-    if not users:
+    subject = take_subject_from_token(token=token)
+    user: User | None | bool = fetch_user_data(session=session, username=subject.get('username'))
+    if user is False:
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
+    elif user is None:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail='Unauthorized user')
-    
-    return users[0]
-
-
-# def auth_from_token(
-    
-# )
+    return user

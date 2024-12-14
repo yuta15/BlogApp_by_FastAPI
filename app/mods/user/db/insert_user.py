@@ -9,7 +9,7 @@ from app.models.User import User
 def insert_user(
     *,
     session: SessionDeps,
-    user: User
+    user_params: User
 ) -> None:
     """
     args:
@@ -22,9 +22,9 @@ def insert_user(
         HTTP_500_INTERNAL_SERVER_ERROR
     """
     try:
-        session.add(user)
+        session.add(user_params)
         session.commit()
-        session.refresh(user)
+        session.refresh(user_params)
     except OperationalError:
         session.rollback()
         return False

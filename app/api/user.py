@@ -1,23 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header, Response
 from starlette.status import HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from fastapi.security import OAuth2PasswordRequestForm
-from typing import Annotated
 
-from app.models.User import UserRegister, UserLogin, User
+from app.models.User import UserRegister, User, UserLogin
 from app.deps.crud import SessionDeps
 from app.deps.oauth import resolve_user_from_token
-from app.mods.user_mods.db import (
-    insert_user
-)
-from app.mods.user_mods.auth import auth_user, check_exist_user, generate_token
-from app.mods.user_mods.db import generate_user
+from app.mods.user.user import (
+    comfirm_not_exist_user, 
+    generate_user,
+    create_user,
+    fetch_user_data,
+    create_token,
+    auth_user
+    )
 
 router = APIRouter(
-    prefix='/user2',
-    tags=['user2']
+    prefix='/user',
+    tags=['user']
 )
 
-@router.post('register')
+@router.post('/register')
 async def register(
     session: SessionDeps,
     user_params:UserRegister
@@ -25,62 +27,61 @@ async def register(
     """
     新規ユーザー登録用の関数
     """
-    # 既存ユーザーの確認
-    is_exist: bool = check_exist_user.check_exist_user(session=session, user_input=user_params)
-    if not is_exist:
-        HTTPException(status_code=HTTP_409_CONFLICT, detail='Conflict User params')
-    # ユーザーデータの作成
-    user: User | None = generate_user.generate_user(user_params=user_params)
+    is_exist: bool = comfirm_not_exist_user(session=session, user_params=user_params)
+    if is_exist is False:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail='Conflict User params')
+    user: User | None = generate_user(user_params=user_params)
     if user is None:
-        HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Check Your Input Data')
-    # ユーザーのinsert処理
-    result: bool = insert_user.insert_user(session=session, user=user)
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Check Your Input Data')
+    result: bool = create_user(session=session, user_params=user)
     if not result:
-        HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Register Failed. Please Try again')
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Register Failed. Please Try again')
     else:
-        return {'detail': 'Successfull'}, 200
+        return {'detail': 'Successfull'}
 
 
 @router.post('/login')
 async def login(
     session: SessionDeps,
-    user_params: UserLogin, 
+    form_input: OAuth2PasswordRequestForm = Depends()
 ):
     """
     ユーザーログイン用の関数
     """
-    # ユーザー名からユーザー情報を取得, ユーザーパスワードの認証
-    is_available: bool = auth_user.auth_user(session=session, user_params=user_params)
-    if not is_available:
-        return HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Please Check Your Input data')
-    # Tokenを生成
-    token: str = generate_token.generate_token(user_params)
-    # Tokenをリターン
+    user_params: UserLogin = UserLogin.model_validate(
+        {
+            'username': form_input.username,
+            'password': form_input.password
+        }
+    )
+    is_auth, user = auth_user(session=session, user_params=user_params)
+    if not is_auth:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Username or Password is Invalid')
+    token: str = create_token(user_params=user)
     return {'access_token':token, 'token_type':"bearer"}
 
 
-@router.get('/logout', dependencies=Depends())
+@router.get('/logout')
 async def logout(
-    session: SessionDeps,
-    user_params: User = Depends(resolve_user_from_token)
+    response: Response,
+    user_params: User = Depends(resolve_user_from_token),
 ):
     """
     ログアウト用関数
     """
-    # Tokenチェック
-    # ヘッダーからTokenを削除
-    # ログアウト成功をリターン
-    return {'access_token':'', 'token_type':''}
+    response.headers['Authorization'] = ''
+    return {'detail': 'logout successfully'}
     
     
 @router.get('list', dependencies=Depends())
 async def users(
-    session: SessionDeps,
-    query: str = None
+    user_params: User = Depends(resolve_user_from_token),
+    query: str = None,
 ):
     """
     ユーザー一覧を取得するための関数
     """
-    # Tokenチェック
+    
     # queryデータをもとに検索処理
+    
     # 検索結果をリターン

@@ -18,7 +18,6 @@ class Article(ArticleBase, table=True):
     updated_at: datetime
     is_public: bool = Field(default=False)
     user_id: UUID = Field(foreign_key='user.uuid', index=True)
-    comments: List[UUID | None] = Field(foreign_key='comment.uuid', index=True, default=[])
 
 
 class PostedArticle(ArticleBase):
@@ -33,4 +32,4 @@ class EditArticle(ArticleBase):
     
 class PublishArticle(ArticleBase):
     id: UUID = Field(primary_key=True, index=True)
-    is_publish = Field(default=False)
+    is_publish: bool = Field(default=False)

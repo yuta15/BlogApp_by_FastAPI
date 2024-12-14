@@ -20,16 +20,13 @@ def fetch_users(*,session,**kwargs):
         elif column == 'email':
             filters.append(User.email == field)
     if not filters:
-        return False
-    stmt = select(User).where(or_(**filters))
+        stmt = select(User)
+    else:
+        stmt = select(User).where(or_(*filters))
     
     try:
-        users: List[User|  None] = session.exec(stmt).all()
-    except OperationalError as e:
-        raise e
-    except DBAPIError as e :
-        raise e
-    except TimeoutError:
+        users: List[User] = session.exec(stmt).all()
+    except (OperationalError, DBAPIError, TimeoutError) as e:
         raise e
     else:
         return users

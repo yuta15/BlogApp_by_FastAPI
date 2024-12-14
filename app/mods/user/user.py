@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List
+import jwt
 
 from app.mods.user.db import (fetch_users, generate_hashed_password, insert_user)
-from app.mods.user.auth import (decode_token, generate_payload, generate_token, verify_password)
+from app.mods.user.auth import (decode_token, generate_payload, verify_password)
 from app.mods.user.data import (sanitize_to_utf8)
 from app.models.User import User, UserRegister, UserLogin
 from app.core.setting import setting
@@ -13,7 +14,7 @@ def generate_user(user_params: UserRegister) -> User:
     """
     Insert可能なデータを生成するための関数
     """
-    sanitized_params:dict = sanitize_to_utf8.sanitize_to_utf8(**user_params)
+    sanitized_params:dict = sanitize_to_utf8.sanitize_to_utf8(username=user_params.username, email=user_params.email)
     hashed_password: str = generate_hashed_password.generate_hash_password(user_params.password)
     current_time = datetime.now(setting.TZ)
     try:
@@ -39,11 +40,20 @@ def create_user(session: SessionDeps, user_params: User) -> bool:
     DBへのinsert処理を実行
     
     """
-    is_result = insert_user.insert_user(session=session, user=user_params)
-    if not is_result:
+    is_result = insert_user.insert_user(session=session, user_params=user_params)
+    return is_result
+
+
+def check_fetch_users(users: any) -> any:
+    """
+    DBから取得したデータの内容の整合性を確認する
+    """
+    if len(users) == 0:
         return False
+    elif not users:
+        return None
     else:
-        return True
+        return users
 
 
 def fetch_user_data(*,session: SessionDeps, **kwargs) -> User | None | bool:
@@ -56,17 +66,17 @@ def fetch_user_data(*,session: SessionDeps, **kwargs) -> User | None | bool:
         bool: 処理内でエラーが発生し、ユーザー情報が取得できなかった場合はFalseを返す
     """
     try:
-        users: List[User | None] | bool = fetch_users.fetch_users(session=session, **kwargs)
+        users: List[User] | bool = fetch_users.fetch_users(session=session, **kwargs)
     except:
         return False
     else:
-        if not users:
+        if len(users) == 0:
             return None
         else:
             return users[0]
 
 
-def fetch_users_data(*,session: SessionDeps,**kwargs) -> List[User | None] | bool:
+def fetch_users_data(*, session: SessionDeps,**kwargs) -> List[User | None] | bool:
     """
     複数のユーザー情報を取得するための関数
     
@@ -76,12 +86,8 @@ def fetch_users_data(*,session: SessionDeps,**kwargs) -> List[User | None] | boo
         None: DB内に該当のユーザー情報が存在しない場合
         bool: 処理内でエラーが発生し、ユーザー情報が取得できなかった場合はFalseを返す
     """
-    try:
-        users: List[User | None] | bool = fetch_users.fetch_users(session=session, **kwargs)
-    except:
-        return False
-    else:
-        return users
+    users: List[User | None] | bool = fetch_users.fetch_users(session=session, **kwargs)
+    return users
 
 
 def auth_user(*, session:SessionDeps, user_params: UserLogin) -> bool:
@@ -91,11 +97,11 @@ def auth_user(*, session:SessionDeps, user_params: UserLogin) -> bool:
         True: 認証成功
         False: 認証失敗
     """
-    user = fetch_user_data(session=session, username=user_params.get('username'))
+    user = fetch_user_data(session=session, username=user_params.username)
     if user is None or not user or not user.is_active:
-        return False
-    is_valid = verify_password.verify_password(user_params.get('password'), user.hashed_password)
-    return is_valid
+        return False, None
+    is_valid = verify_password.verify_password(user_params.password, user.hashed_password)
+    return is_valid, user
 
 
 def take_subject_from_token(token) -> dict | None:
@@ -111,10 +117,25 @@ def comfirm_not_exist_user(*, session: SessionDeps, user_params: UserRegister) -
     """
     ユーザーが入力したユーザー名、emailデータがすでに使用されていないことを確認する。
     """
-    users = fetch_users_data(session=session, username=user_params.username, email=user_params.email)
-    if users == False:
+    try:
+        users: List[User] = fetch_users.fetch_users(
+            session=session, 
+            username=user_params.username, 
+            email=user_params.email
+            )
+    except:
         return False
-    elif not users:
-        return True
     else:
-        return False
+        if len(users) == 0:
+            return True
+        else:
+            return False
+
+
+def create_token(user_params: User) -> str:
+    """
+    Token生成用関数
+    """
+    payload: dict = generate_payload.generate_payload(user_params=user_params)
+    token: str = jwt.encode(payload=payload, key=setting.SECRET_KEY, algorithm=setting.ALGORITHM)
+    return token
