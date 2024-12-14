@@ -14,8 +14,8 @@ def fetch_user(
     input_username: str,
     ) -> User:
     """
-    ユーザー名からユーザー情報を取得し、パスワード検証を実施する。
-    問題なく完了すれば、ユーザー情報が取得される。
+    ユーザー名からユーザー情報を取得する。
+    正常に取得できれば、ユーザー情報が取得される。
     """
     users: List[User] = fetch_users.fetch_users(
         session=session,

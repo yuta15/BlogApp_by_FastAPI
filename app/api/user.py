@@ -6,13 +6,11 @@ from typing import Annotated
 from app.models.User import UserRegister, UserLogin, User
 from app.deps.crud import SessionDeps
 from app.deps.oauth import resolve_user_from_token
-from app.mods.user_mods import (
-    check_exist_user,
-    generate_user,
-    insert_user,
-    auth_user,
-    generate_token
+from app.mods.user_mods.db import (
+    insert_user
 )
+from app.mods.user_mods.auth import auth_user, check_exist_user, generate_token
+from app.mods.user_mods.db import generate_user
 
 router = APIRouter(
     prefix='/user2',

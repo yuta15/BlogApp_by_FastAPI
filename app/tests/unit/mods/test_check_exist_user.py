@@ -1,7 +1,7 @@
 import pytest
 from fastapi.exceptions import HTTPException
 
-from app.mods.user import check_exist_user
+from app.mods._user import check_exist_user
 from app.tests.mods.get_db import get_db
 from app.models.User import User
 

@@ -26,10 +26,10 @@ def fetch_users(*,session,**kwargs):
     try:
         users: List[User|  None] = session.exec(stmt).all()
     except OperationalError as e:
-        raise OperationalError(f'{e}: Can not fetch user data')
-    except DBAPIError as e:
-        raise DBAPIError(f'{e}: Can not fetch user data')
-    except TimeoutError as e:
-        raise DBAPIError(f'{e}: Can not fetch user data')
+        raise e
+    except DBAPIError as e :
+        raise e
+    except TimeoutError:
+        raise e
     else:
         return users

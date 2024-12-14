@@ -2,7 +2,7 @@ import pytest
 from fastapi.exceptions import HTTPException
 
 
-from app.mods.user import auth_user
+from app.mods._user import auth_user
 
 
 @pytest.mark.parametrize(

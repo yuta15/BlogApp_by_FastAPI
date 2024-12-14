@@ -1,8 +1,8 @@
 import jwt
 
 from app.core.setting import setting
-from app.mods.user_mods.fetch.fetch_users import fetch_users
-from app.mods.user_mods.generate.generate_payload import generate_payload
+from app.mods.user_mods.db.fetch_users import fetch_users
+from app.mods.user_mods.auth.generate_payload import generate_payload
 from app.models.User import UserLogin, User
 
 
