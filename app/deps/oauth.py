@@ -21,9 +21,7 @@ def resolve_user_from_token(
     Token情報からToken情報を取得する。
     """
     subject = take_subject_from_token(token=token)
-    user: User | None | bool = fetch_user_data(session=session, username=subject.get('username'))
-    if user is False:
-        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
-    elif user is None:
+    user: User | None = fetch_user_data(session=session, username=subject.get('username'))
+    if user is None:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail='Unauthorized user')
     return user

@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import SQLModel, Field
 from pydantic import EmailStr
-from typing import List
+from typing import List, Dict
 from uuid import UUID, uuid4
 
 

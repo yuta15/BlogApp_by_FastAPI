@@ -25,23 +25,15 @@ def insert_user(
         session.add(user_params)
         session.commit()
         session.refresh(user_params)
-    except OperationalError:
+    except (
+        OperationalError,
+        InterfaceError,
+        TimeoutError,
+        IntegrityError,
+        DBAPIError,
+        Exception
+        ) as e:
         session.rollback()
-        return False
-    except InterfaceError:
-        session.rollback()
-        return False
-    except TimeoutError:
-        session.rollback()
-        return False
-    except IntegrityError:
-        session.rollback()
-        return False
-    except DBAPIError:
-        session.rollback()
-        return False
-    except Exception:
-        session.rollback()
-        return False
+        raise e
     else:
         return True

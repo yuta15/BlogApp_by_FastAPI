@@ -1,15 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, Header, Response
-from starlette.status import HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
+import json
+from pydantic import EmailStr
+from uuid import UUID
 
 from app.models.User import UserRegister, User, UserLogin
 from app.deps.crud import SessionDeps
 from app.deps.oauth import resolve_user_from_token
 from app.mods.user.user import (
-    comfirm_not_exist_user, 
+    check_duplicate_user_params, 
     generate_user,
     create_user,
-    fetch_user_data,
     create_token,
     auth_user
     )
@@ -27,17 +28,12 @@ async def register(
     """
     新規ユーザー登録用の関数
     """
-    is_exist: bool = comfirm_not_exist_user(session=session, user_params=user_params)
-    if is_exist is False:
-        raise HTTPException(status_code=HTTP_409_CONFLICT, detail='Conflict User params')
-    user: User | None = generate_user(user_params=user_params)
-    if user is None:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Check Your Input Data')
-    result: bool = create_user(session=session, user_params=user)
-    if not result:
-        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail='Register Failed. Please Try again')
-    else:
-        return {'detail': 'Successfull'}
+    is_exist: bool = check_duplicate_user_params(session=session, user_params=user_params)
+    if not is_exist:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Conflict User params')
+    user: User = generate_user(user_params=user_params)
+    create_user(session=session, user_params=user)
+    return {'detail': 'Successfull'}
 
 
 @router.post('/login')
@@ -56,7 +52,7 @@ async def login(
     )
     is_auth, user = auth_user(session=session, user_params=user_params)
     if not is_auth:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Username or Password is Invalid')
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Username or Password is Invalid')
     token: str = create_token(user_params=user)
     return {'access_token':token, 'token_type':"bearer"}
 
@@ -73,15 +69,27 @@ async def logout(
     return {'detail': 'logout successfully'}
     
     
-@router.get('list', dependencies=Depends())
+@router.get('/list')
 async def users(
-    user_params: User = Depends(resolve_user_from_token),
-    query: str = None,
+    session: SessionDeps,
+    username: str | None = None,
+    email: EmailStr | None = None,
+    uuid: UUID | None = None,
+    args: str | None = Query(None)
 ):
     """
-    ユーザー一覧を取得するための関数
+    ユーザー 一覧を取得するための関数
     """
+    # if search_user:
+    args = json.loads(args)
     
+    return {
+        'username': username,
+        'email': email,
+        'uuid': uuid,
+        'args': args
+        }
+        
     # queryデータをもとに検索処理
-    
+    # users: List[User] = search_user(session=session, kwargs=query)
     # 検索結果をリターン

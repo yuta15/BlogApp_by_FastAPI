@@ -3,7 +3,7 @@ from app.models.User import User
 from typing import List
 from sqlalchemy.exc import OperationalError, TimeoutError, DBAPIError
 
-def fetch_users(*,session,**kwargs):
+def fetch_users(*,session,**kwargs) -> object:
     """
     UUID、ユーザー名、Emailの値から一意のユーザーを取得するための関数です。
     **kwargsにはuuid, username, emailを含めることができます。
@@ -25,7 +25,7 @@ def fetch_users(*,session,**kwargs):
         stmt = select(User).where(or_(*filters))
     
     try:
-        users: List[User] = session.exec(stmt).all()
+        users: List[User] = session.exec(stmt)
     except (OperationalError, DBAPIError, TimeoutError) as e:
         raise e
     else:

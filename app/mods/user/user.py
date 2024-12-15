@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from datetime import datetime
 from typing import List
 import jwt
@@ -14,10 +15,10 @@ def generate_user(user_params: UserRegister) -> User:
     """
     Insert可能なデータを生成するための関数
     """
-    sanitized_params:dict = sanitize_to_utf8.sanitize_to_utf8(username=user_params.username, email=user_params.email)
-    hashed_password: str = generate_hashed_password.generate_hash_password(user_params.password)
-    current_time = datetime.now(setting.TZ)
     try:
+        sanitized_params:dict = sanitize_to_utf8.sanitize_to_utf8(username=user_params.username, email=user_params.email)
+        hashed_password: str = generate_hashed_password.generate_hash_password(user_params.password)
+        current_time = datetime.now(setting.TZ)
         user: User = User.model_validate(
             {
                 'username': sanitized_params.get('username'),
@@ -30,64 +31,56 @@ def generate_user(user_params: UserRegister) -> User:
             },
         )
     except ValueError:
-        return None
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Check Your Input Data')
     else:
         return user
-    
+
 
 def create_user(session: SessionDeps, user_params: User) -> bool:
     """
     DBへのinsert処理を実行
     
     """
-    is_result = insert_user.insert_user(session=session, user_params=user_params)
-    return is_result
-
-
-def check_fetch_users(users: any) -> any:
-    """
-    DBから取得したデータの内容の整合性を確認する
-    """
-    if len(users) == 0:
-        return False
-    elif not users:
-        return None
+    try:
+        is_result = insert_user.insert_user(session=session, user_params=user_params)
+    except:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
     else:
-        return users
+        return is_result
 
 
-def fetch_user_data(*,session: SessionDeps, **kwargs) -> User | None | bool:
+def fetch_user_data(*,session: SessionDeps, **kwargs) -> User | None :
     """
     単一のユーザー情報を取得するための関数
     
     return:
         User: DB内にユーザー情報が存在した場合
         None: DB内に該当のユーザー情報が存在しない場合
-        bool: 処理内でエラーが発生し、ユーザー情報が取得できなかった場合はFalseを返す
     """
     try:
-        users: List[User] | bool = fetch_users.fetch_users(session=session, **kwargs)
+        users: object = fetch_users.fetch_users(session=session, **kwargs)
+        user = users.first()
     except:
-        return False
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
     else:
-        if len(users) == 0:
-            return None
-        else:
-            return users[0]
+        return user
 
 
-def fetch_users_data(*, session: SessionDeps,**kwargs) -> List[User | None] | bool:
+def fetch_users_data(*, session: SessionDeps,**kwargs) -> List[User] | None:
     """
     複数のユーザー情報を取得するための関数
     
     return:
         List[User | None | bool]
         User: DB内にユーザー情報が存在した場合
-        None: DB内に該当のユーザー情報が存在しない場合
-        bool: 処理内でエラーが発生し、ユーザー情報が取得できなかった場合はFalseを返す
     """
-    users: List[User | None] | bool = fetch_users.fetch_users(session=session, **kwargs)
-    return users
+    try:
+        result_obj: object = fetch_users.fetch_users(session=session, **kwargs)
+        users = result_obj.all()
+    except:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
+    else:
+        return users
 
 
 def auth_user(*, session:SessionDeps, user_params: UserLogin) -> bool:
@@ -113,23 +106,22 @@ def take_subject_from_token(token) -> dict | None:
     return subject
 
 
-def comfirm_not_exist_user(*, session: SessionDeps, user_params: UserRegister) -> bool:
+def check_duplicate_user_params(*, session: SessionDeps, user_params: UserRegister) -> bool:
     """
-    ユーザーが入力したユーザー名、emailデータがすでに使用されていないことを確認する。
+    ユーザー名、パスワードが重複していないことを確認するための関数
+    args:
+        session: sessionDeps
+        user_params: UserRegister
+    return:
+        bool:
+            値が重複していない場合はTrueを返します。
+            重複している場合は、Falseを返します。
     """
-    try:
-        users: List[User] = fetch_users.fetch_users(
-            session=session, 
-            username=user_params.username, 
-            email=user_params.email
-            )
-    except:
-        return False
+    user: User | None = fetch_user_data(session=session, username=user_params.username, email=user_params.email)
+    if not user:
+        return True
     else:
-        if len(users) == 0:
-            return True
-        else:
-            return False
+        return False
 
 
 def create_token(user_params: User) -> str:
@@ -139,3 +131,11 @@ def create_token(user_params: User) -> str:
     payload: dict = generate_payload.generate_payload(user_params=user_params)
     token: str = jwt.encode(payload=payload, key=setting.SECRET_KEY, algorithm=setting.ALGORITHM)
     return token
+
+
+def search_user_by_input_params(*, session: SessionDeps, username=None, email=None, uuid=None, **kwargs) -> List[User] | None:
+    """
+    ユーザー情報を検索するための関数
+    """
+    try:
+        search_user(session=session, )
