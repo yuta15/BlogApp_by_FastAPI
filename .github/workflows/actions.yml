@@ -9,22 +9,22 @@ jobs:
         runs-on: ubuntu-latest
         env:
             ENV: 'Dev'
-            ALGORITHM: 'HS256'
-            DB_USERNAME: 'testuser'
-            DB_PASSWORD: 'testuser1234'
+            ALGORITHM: ${{ secrets.ALGORITHM }}
+            DB_USERNAME: ${{ secrets.DB_USERNAME }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
             DB_HOSTNAME: 'localhost'
-            DB_PORT: '3306'
-            DB_NAME: 'main'
+            DB_PORT: 3306
+            DB_NAME: ${{ env.MYSQL_DATABASE }}
         services:
             db:
                 image: mysql:latest
                 ports:
                     - 3306:3306
                 env:
-                    MYSQL_ROOT_PASSWORD: rootuserpassword
-                    MYSQL_DATABASE: main
-                    MYSQL_USER: testuser
-                    MYSQL_PASSWORD: testuser1234
+                    MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+                    MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+                    MYSQL_USER: ${{ secrets.DB_USERNAME }}
+                    MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
                     options: >-
                         --health-cmd="mysqladmin ping --silent"
                         --health-interval=10s
