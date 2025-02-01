@@ -137,5 +137,11 @@ def search_user_by_input_params(*, session: SessionDeps, username=None, email=No
     """
     ユーザー情報を検索するための関数
     """
+    input_params={
+        'username': username,
+        'email': email,
+        'uuid': uuid,
+        'args': kwargs
+    }
     try:
-        search_user(session=session, )
+        search_user(session=session, input_para)
