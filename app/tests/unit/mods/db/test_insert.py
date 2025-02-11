@@ -10,7 +10,7 @@ def test_insert_user_data(db_session, create_users):
     insert_data関数をテストするための関数
     """
     session = next(db_session)
-    insert_users = create_users
+    insert_users = create_users(number=4)
     for user in insert_users:
         assert True == insert_data(session=session, data=user)
         

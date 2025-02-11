@@ -26,8 +26,16 @@ def create_users():
         is_only_active_user: bool = False,
         is_only_inactive_user: bool = False
     ):
-        users = create_success_users(number=3, is_active_users=False, is_admin_users=True)
+        users = create_success_users(
+            number=number, 
+            is_only_admin_user=is_only_admin_user, 
+            is_only_normal_user=is_only_normal_user, 
+            is_only_active_user=is_only_active_user, 
+            is_only_inactive_user=is_only_inactive_user
+            )
         return users
+    
+    return _create_users
 
 
 @pytest.fixture(scope='module')

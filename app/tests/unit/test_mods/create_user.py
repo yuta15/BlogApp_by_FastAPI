@@ -20,6 +20,8 @@ def create_success_users(
     正常にinsert可能な一般ユーザーを生成する。
 
     Args:
+        number: int = 1
+            - 作成するユーザーの数を指定
         is_only_normal_users: bool = False,
             - active/inactiveのノーマルユーザーのみを作成
         is_only_normal_active_users: bool=False,
