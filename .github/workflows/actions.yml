@@ -39,7 +39,7 @@ jobs:
             - name: check dir
               run: |
                    ls -la &&\
-                   pwd &&\
+                   pwd
 
             - name: Check out repository code
               uses: actions/checkout@v4
