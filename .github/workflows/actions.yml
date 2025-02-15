@@ -40,7 +40,6 @@ jobs:
               run: |
                    ls -la &&\
                    pwd &&\
-                   cd /tmp && tree
 
             - name: Check out repository code
               uses: actions/checkout@v4
