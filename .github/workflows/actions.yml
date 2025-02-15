@@ -51,6 +51,7 @@ jobs:
               working-directory: docker/app
               run: |
                    ls -la &&\
+                   pwd &&\
                    pip install --upgrade pip &&\
                    pip install -r requirements.txt
             
