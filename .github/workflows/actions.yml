@@ -25,11 +25,11 @@ jobs:
                     MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
                     MYSQL_USER: ${{ secrets.DB_USERNAME }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
-                    options: >-
-                        --health-cmd="mysqladmin ping --silent"
-                        --health-interval=10s
-                        --health-timeout=5s
-                        --health-retries=3
+                options: >-
+                    --health-cmd="mysqladmin ping --silent"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=30
 
         steps:
             - name: Check out repository code
@@ -45,5 +45,16 @@ jobs:
                    pip install --upgrade pip &&\
                    pip install -r requirements.txt
             
+            - name: Install mysql-client
+              run: apt-get update && sudo apt-get install -y mysql-client
+            
+            - name: Wait for MySQL to be ready
+              run: |
+                  for i in {1..30}; do
+                    mysqladmin ping -h"$DB_HOSTNAME" --silent && break
+                    echo "Waiting for MySQL..."
+                    sleep 2
+                  done
+
             - name: execute test
               run: pytest -svv
