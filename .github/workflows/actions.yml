@@ -47,27 +47,6 @@ jobs:
             - name: Check out repository code
               uses: actions/checkout@v4
 
-
-            - name: Copy init-db file
-              run: sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d
-
-            - name: Check tmp dir
-              working-directory: /tmp
-              run : sudo ls -la docker
-              
-            - name: chmod
-              working-directory: /tmp
-              run: sudo chmod -R 755 docker
-
-            - name: Check tmp dir
-              working-directory: /tmp
-              run : sudo ls -la docker
-
-            - name: Docker restart
-              run: |
-                    docker stop ${{ job.services.db.id }} &&\
-                    docker start ${{ job.services.db.id }}
-            
             - name: Docker logs
               run: docker logs ${{ job.services.db.id }}
 
