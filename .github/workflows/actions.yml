@@ -28,7 +28,7 @@ jobs:
                     MYSQL_USER: ${{ secrets.DB_USERNAME }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
                 volumes:
-                  - ./docker/db/initdb.d:/docker-entrypoint-initdb.d 
+                  - ${{ github.workspace }}/docker/db/initdb.d:/docker-entrypoint-initdb.d 
                 options: >-
                     --health-cmd="mysqladmin ping --silent"
                     --health-interval=10s
@@ -52,16 +52,7 @@ jobs:
 
             - name: Install mysql-client
               run: sudo apt-get update && sudo apt-get install -y mysql-client
-
-            - name: Check restart SQL
-              run: |
-                  for i in {1..30}; do
-                    mysqladmin ping -h"$DB_HOSTNAME" --silent && break
-                    echo "Waiting for MySQL..."
-                    sleep 2
-                  done
             
-
             - name: install dependencies
               working-directory: docker/app
               run: |
