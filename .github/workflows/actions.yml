@@ -41,9 +41,7 @@ jobs:
                    ls -la &&\
                    pwd
 
-            - name: rm volume dir
-              run: sudo rm -fr docker
-
+                   
             - name: Check out repository code
               uses: actions/checkout@v4
 
