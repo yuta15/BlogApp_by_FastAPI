@@ -48,7 +48,12 @@ jobs:
             - name: Copy and Restart services
               run: |
                   sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d &&\
-                  docker restart ${{ job.services.db.id }}
+
+
+            - name: Check Dir /tmp
+              working-directory: /tmp
+              run: tree && docker restart ${{ job.services.db.id }}
+
 
             - name: Install mysql-client
               run: sudo apt-get update && sudo apt-get install -y mysql-client
