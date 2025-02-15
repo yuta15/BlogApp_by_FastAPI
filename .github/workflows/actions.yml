@@ -61,7 +61,9 @@ jobs:
               run : sudo ls -la docker
 
             - name: Docker restart
-              run: docker restart ${{ job.services.db.id }}
+              run: |
+                    docker stop ${{ job.services.db.id }} &&\
+                    docker start ${{ job.services.db.id }}
             
             - name: Docker logs
               run: docker logs ${{ job.services.db.id }}
