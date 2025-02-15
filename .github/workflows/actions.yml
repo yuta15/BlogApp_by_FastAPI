@@ -46,7 +46,8 @@ jobs:
 
 
             - name: Copy init-db file
-              run: sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d
+              run: sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d &&\
+                   sudo chmod -R 777 docker
 
 
             - name: Docker restart
