@@ -28,7 +28,7 @@ jobs:
                     MYSQL_USER: ${{ secrets.DB_USERNAME }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
                 volumes:
-                  - /tmp/docker/db/initdb.d:/docker-entrypoint-initdb.d 
+                  - ./docker/db/initdb.d:/docker-entrypoint-initdb.d 
                 options: >-
                     --health-cmd="mysqladmin ping --silent"
                     --health-interval=10s
@@ -40,6 +40,9 @@ jobs:
               run: |
                    ls -la &&\
                    pwd
+
+            - name: rm volume dir
+              run: sudo rm -fr docker
 
             - name: Check out repository code
               uses: actions/checkout@v4
