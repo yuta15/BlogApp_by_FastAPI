@@ -13,7 +13,7 @@ jobs:
             ALGORITHM: ${{ secrets.ALGORITHM }}
             DB_USERNAME: ${{ secrets.DB_USERNAME }}
             DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
-            DB_HOSTNAME: 'db'
+            DB_HOSTNAME: '127.0.0.1'
             DB_PORT: 3306
             DB_NAME: ${{ vars.MYSQL_DATABASE }}
 
@@ -36,13 +36,6 @@ jobs:
         steps:
             - name: Check out repository code
               uses: actions/checkout@v4
-            
-            - name: print env
-              run: echo "DB_USERNAME=${DB_USERNAME}"
-
-
-            - name: check current_dir
-              run: ls -la
             
             - name: install dependencies
               working-directory: docker/app
