@@ -7,6 +7,7 @@ jobs:
     Blog_app_job:
         name: Blog app job
         runs-on: ubuntu-latest
+        environment: Dev
         env:
             ENV: 'Dev'
             ALGORITHM: ${{ secrets.ALGORITHM }}
@@ -23,14 +24,14 @@ jobs:
                     - 3306:3306
                 env:
                     MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-                    MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+                    MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
                     MYSQL_USER: ${{ secrets.DB_USERNAME }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
-                # options: >-
-                #     --health-cmd="mysqladmin ping --silent"
-                #     --health-interval=10s
-                #     --health-timeout=5s
-                #     --health-retries=30
+                options: >-
+                    --health-cmd="mysqladmin ping --silent"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=30
 
         steps:
             - name: Check out repository code
@@ -51,7 +52,7 @@ jobs:
                    pip install -r requirements.txt
             
             - name: Install mysql-client
-              run: apt-get update && sudo apt-get install -y mysql-client
+              run: sudo apt-get update && sudo apt-get install -y mysql-client
             
             - name: Wait for MySQL to be ready
               run: |
