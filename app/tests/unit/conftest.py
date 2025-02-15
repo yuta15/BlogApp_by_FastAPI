@@ -1,17 +1,20 @@
 import pytest
+from uuid import UUID
 
 from app.core.db import get_db
 from app.tests.unit.test_mods.create_user import create_success_users
+from app.tests.unit.test_mods.create_articles import create_success_articles
+from app.tests.unit.test_mods.insert_test_user import insert_test_user
 
 
-
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def db_session():
     """
     sessionを作成するfixture
     """
-    session = get_db()
+    session = next(get_db())
     yield session
+    session.close()
     
     
 @pytest.fixture(scope='module')
@@ -38,10 +41,29 @@ def create_users():
     return _create_users
 
 
-@pytest.fixture(scope='module')
-def create_article():
+@pytest.fixture(scope='function')
+def create_articles():
     """
     insertするarticleデータを作成する。
     """
-    users = create_success_users(is_active_users=True)
+    def _create_articles(
+        user_id: UUID,
+        number: int = 1,
+        is_only_public: bool = False,
+    ):
+        articles = create_success_articles(
+            user_id=user_id,
+            number=number,
+            is_only_public=is_only_public
+        )
+        return articles
     
+    return _create_articles
+
+
+@pytest.fixture(scope='function')
+def inserted_user():
+    user = create_success_users(number=1)[0]
+    dict_user = dict(user)
+    insert_test_user(data=user)
+    return dict_user

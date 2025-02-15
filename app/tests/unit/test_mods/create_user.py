@@ -22,20 +22,19 @@ def create_success_users(
     Args:
         number: int = 1
             - 作成するユーザーの数を指定
-        is_only_normal_users: bool = False,
-            - active/inactiveのノーマルユーザーのみを作成
-        is_only_normal_active_users: bool=False,
-            - activeなノーマルユーザーを作成
-        is_only_admin_users: bool =False,
-            - active/inactiveなadminユーザーのみを作成
-        is_only_admin_active_users: bool = False,
-            - activeなadminユーザーのみを作成
+        is_only_admin_user: bool = False,
+            - adminユーザーのみを作成
+        is_only_normal_user: bool=False,
+            - ノーマルユーザーのみを作成
+        is_only_active_user: bool = False,
+            - activeなユーザーのみを作成
+        is_only_inactive_user: bool = False,
+            - inactiveなユーザーのみを作成
             
-        is_active_users: bool=False, 
-            - activeなユーザーのみを作成(admin/normal混同)
-        is_inactive_users: bool=False,
-            - inactiveなユーザーのみを作成(admin/normal混同)
-        
+        ex)
+        active admin userのみを作成したい場合は以下のようにすることで指定可能。
+        is_only_admin_user=True, is_only_active_user=True
+        デフォルトでは全パターンのユーザーを作成する。
     Return:
         List[User]
     """
