@@ -27,22 +27,20 @@ jobs:
                     MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
                     MYSQL_USER: ${{ secrets.DB_USERNAME }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
-                # volumes:
-                #   - /docker/db/initdb.d:/docker-entrypoint-initdb.d 
+                volumes:
+                  - ${{ github.workspace }}/tmp/docker/db/initdb.d:/docker-entrypoint-initdb.d 
                 options: >-
                     --health-cmd="mysqladmin ping --silent"
                     --health-interval=10s
                     --health-timeout=5s
                     --health-retries=30
 
-
-
         steps:
             - name: check dir
               run: |
                    ls -la &&\
-                   pwd
-                  #  cp -r docker/db/initdb.d ${{github.workspace}}/docker/db/initdb.d
+                   pwd &&\
+                   mkdir src
 
             - name: Check out repository code
               uses: actions/checkout@v4
