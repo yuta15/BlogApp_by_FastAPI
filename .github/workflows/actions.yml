@@ -47,7 +47,7 @@ jobs:
 
             - name: Copy and Restart services
               run: |
-                  cp -r docker/db/initdb.d /tmp/docker/db/initdb.d &&\
+                  sudo cp -r docker/db/initdb.d/ /tmp/docker/db/initdb.d &&\
                   docker restart ${{ job.services.db.id }}
 
             - name: Install mysql-client
