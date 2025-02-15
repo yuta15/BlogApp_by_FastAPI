@@ -45,22 +45,19 @@ jobs:
               uses: actions/checkout@v4
 
 
-            - name: Copy and Restart services
-              run: |
-                  sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d
+            - name: Copy init-db file
+              run: sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d
 
 
-            - name: Check Dir /tmp
-              working-directory: /tmp
-              run: sudo tree &&\
-                   docker restart ${{ job.services.db.id }}
+            - name: Docker restart
+              run: docker restart ${{ job.services.db.id }}
 
 
             - name: Install mysql-client
               run: sudo apt-get update && sudo apt-get install -y mysql-client
                 
 
-            - name: Wait for MySQL to be ready
+            - name: Check restart SQL
               run: |
                   for i in {1..30}; do
                     mysqladmin ping -h"$DB_HOSTNAME" --silent && break
