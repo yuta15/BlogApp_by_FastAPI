@@ -47,7 +47,7 @@ jobs:
 
             - name: Copy and Restart services
               run: |
-                  sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d &&\
+                  sudo cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d
 
 
             - name: Check Dir /tmp
@@ -58,6 +58,7 @@ jobs:
             - name: Install mysql-client
               run: sudo apt-get update && sudo apt-get install -y mysql-client
                 
+
             - name: Wait for MySQL to be ready
               run: |
                   for i in {1..30}; do
@@ -66,6 +67,7 @@ jobs:
                     sleep 2
                   done
             
+
             - name: install dependencies
               working-directory: docker/app
               run: |
