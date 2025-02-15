@@ -52,7 +52,7 @@ jobs:
 
             - name: Check Dir /tmp
               working-directory: /tmp
-              run: tree && docker restart ${{ job.services.db.id }}
+              run: docker restart ${{ job.services.db.id }}
 
 
             - name: Install mysql-client
