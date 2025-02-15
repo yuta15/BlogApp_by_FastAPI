@@ -49,7 +49,7 @@ jobs:
               run: cp -r docker/db/initdb.d/* /tmp/docker/db/initdb.d &&\
                    ls -la /tmp/docker &&\
                    chmod -R 777 /tmp/docker
-                   ls -la /tmp/docker &&\
+                   ls -la /tmp/docker
 
 
             - name: Docker restart
