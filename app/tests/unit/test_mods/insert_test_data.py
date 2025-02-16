@@ -2,11 +2,11 @@
 from app.core.db import get_db
 
 
-def insert_test_user(
+def insert_test_data(
     data
 ):
     """
-    test用のユーザーをinsertする為の関数
+    test用のdataをinsertする為の関数
     """
     session = next(get_db())
     try:

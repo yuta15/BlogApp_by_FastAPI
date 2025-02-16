@@ -4,7 +4,7 @@ from uuid import UUID
 from app.core.db import get_db
 from app.tests.unit.test_mods.create_user import create_success_users
 from app.tests.unit.test_mods.create_articles import create_success_articles
-from app.tests.unit.test_mods.insert_test_user import insert_test_user
+from app.tests.unit.test_mods.insert_test_data import insert_test_data
 
 
 @pytest.fixture(scope='function')
@@ -65,12 +65,12 @@ def create_articles():
 def inserted_user():
     user = create_success_users(number=1)[0]
     dict_user = dict(user)
-    insert_test_user(data=user)
+    insert_test_data(data=user)
     return dict_user
 
 
 @pytest.fixture(scope='function')
-def insert_user_fixture():
+def insert_data_fixture():
     def _insert_test_user(data):
-        insert_test_user(data=data)
+        insert_test_data(data=data)
     return _insert_test_user
