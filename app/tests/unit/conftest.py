@@ -62,15 +62,7 @@ def create_articles():
 
 
 @pytest.fixture(scope='function')
-def inserted_user():
-    user = create_success_users(number=1)[0]
-    dict_user = dict(user)
-    insert_test_data(data=user)
-    return dict_user
-
-
-@pytest.fixture(scope='function')
 def insert_data_fixture():
-    def _insert_test_user(data):
-        insert_test_data(data=data)
+    def _insert_test_user(session, data):
+        insert_test_data(session=session, data=data)
     return _insert_test_user

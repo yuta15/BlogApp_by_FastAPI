@@ -9,8 +9,8 @@ def test_insert_user_data(db_session, create_users):
     """
     insert_data関数をテストするための関数
     """
-    insert_users = create_users(number=4)
     session = db_session
+    insert_users = create_users(number=4)
     for user in insert_users:
         assert True == insert_data(session=session, data=user)
 
@@ -30,7 +30,7 @@ def test_insert_article_data(db_session, create_users, create_articles, insert_d
     for user in users:
         user_id = user.uuid
         dict_users.append(dict(user))
-        insert_data_fixture(user)
+        insert_data_fixture(session=session, data=user)
         only_user_article = create_articles(user_id=user_id, number=3)
         articles = articles + only_user_article
 
