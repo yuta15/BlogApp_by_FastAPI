@@ -39,7 +39,6 @@ jobs:
                    ls -la &&\
                    pwd
 
-
             - name: Check out repository code
               uses: actions/checkout@v4
 

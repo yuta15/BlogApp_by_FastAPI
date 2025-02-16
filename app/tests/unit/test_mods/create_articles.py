@@ -370,7 +370,7 @@ Wed Jun 12 13:48:27 UTC 2024
 <h1>sv-2<h1>
 ```
 """,
-                'creaeted_at': now,
+                'created_at': now,
                 'updated_at': now,
                 'is_public': is_only_public if is_only_public else bool(number % 2),
                 'user_id': user_id

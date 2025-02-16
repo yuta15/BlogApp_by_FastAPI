@@ -14,7 +14,7 @@ class ArticleBase(SQLModel):
 class Article(ArticleBase, table=True):
     id: UUID = Field(primary_key=True, index=True)
     body: str = Field(sa_column=Column(LONGTEXT))
-    creaeted_at: datetime
+    created_at: datetime
     updated_at: datetime
     is_public: bool = Field(default=False)
     user_id: UUID = Field(foreign_key='user.uuid', index=True)

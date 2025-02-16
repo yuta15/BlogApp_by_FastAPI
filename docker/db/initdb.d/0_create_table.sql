@@ -18,7 +18,7 @@ CREATE TABLE article (
 	`id` CHAR(32) NOT NULL, 
 	`title` VARCHAR(150) NOT NULL, 
 	`body` LONGTEXT, 
-	`creaeted_at` DATETIME NOT NULL, 
+	`created_at` DATETIME NOT NULL, 
 	`updated_at` DATETIME NOT NULL, 
 	`is_public` BOOL NOT NULL, 
 	`user_id` CHAR(32) NOT NULL, 

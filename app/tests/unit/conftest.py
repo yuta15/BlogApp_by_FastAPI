@@ -67,3 +67,10 @@ def inserted_user():
     dict_user = dict(user)
     insert_test_user(data=user)
     return dict_user
+
+
+@pytest.fixture(scope='function')
+def insert_user_fixture():
+    def _insert_test_user(data):
+        insert_test_user(data=data)
+    return _insert_test_user
