@@ -11,11 +11,8 @@ def db_init():
     DBを初期化する為のfixture
     """
     os.environ['Env'] = 'Testing'
-    
     create_table()
-    
     yield
-    
     drop_table()
     create_table()
     init_db()
