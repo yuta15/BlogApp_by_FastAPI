@@ -2,7 +2,7 @@ from sqlmodel import Session
 from sqlalchemy.exc import OperationalError, IntegrityError
 
 
-def insert_data(
+def insert_update_data(
     *,
     session: Session,
     data: any

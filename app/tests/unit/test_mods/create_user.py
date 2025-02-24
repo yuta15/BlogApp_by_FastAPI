@@ -38,7 +38,7 @@ def create_success_users(
     Return:
         List[User]
     """
-    insert_users = []
+    users = []
     if is_only_admin_user and is_only_active_user:
         pattern = [(1, 1)]
     elif is_only_normal_user and is_only_active_user:
@@ -58,10 +58,10 @@ def create_success_users(
     else:
         pattern = list(itertools.product([0, 1], repeat=2))
     
-    while len(insert_users) < number:
-        if len(insert_users) != 0:
-            active_num = pattern[len(insert_users) % len(pattern)][0]
-            admin_num = pattern[len(insert_users) % len(pattern)][0]
+    while len(users) < number:
+        if len(users) != 0:
+            active_num = pattern[len(users) % len(pattern)][0]
+            admin_num = pattern[len(users) % len(pattern)][0]
         else:
             active_num = pattern[0][0]
             admin_num = pattern[0][0]
@@ -82,5 +82,5 @@ def create_success_users(
                 'is_admin': bool(admin_num)
             }
         )
-        insert_users.append(insert_user)
-    return insert_users
+        users.append(insert_user)
+    return users

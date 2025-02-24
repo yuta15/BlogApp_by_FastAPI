@@ -1,7 +1,9 @@
 import pytest
 
+import datetime
+import time
 
-from app.mods.db.insert import insert_data
+from app.mods.db.insert_update import insert_update_data
 
 
 
@@ -12,7 +14,7 @@ def test_insert_user_data(db_session, create_users):
     session = db_session
     insert_users = create_users(number=4)
     for user in insert_users:
-        assert True == insert_data(session=session, data=user)
+        assert True == insert_update_data(session=session, data=user)
 
 
 def test_insert_article_data(db_session, create_users, create_articles, insert_data_fixture):
@@ -35,4 +37,12 @@ def test_insert_article_data(db_session, create_users, create_articles, insert_d
         articles = articles + only_user_article
 
     for article in articles:
-        assert True == insert_data(session=session, data=article)
+        assert True == insert_update_data(session=session, data=article)
+        
+        
+# def update_user_data(db_session):
+#     """
+#     既存のユーザーデータのupdateのテスト
+#     """
+#     session = db_session
+#     stmt = 
