@@ -14,9 +14,9 @@ def test_select_user(db_session, create_users, insert_data_fixture):
     users = create_users(number = user_count)
     for user in users:
         insert_data_fixture(session, user)
-        assert user == select_data(session=session, stmts=select(User).where(User.username == user.username))[0]
-        assert user == select_data(session=session, stmts=select(User).where(User.email == user.email))[0]
-        assert user == select_data(session=session, stmts=select(User).where(User.uuid == user.uuid))[0]
+        assert user == select_data(session=session, stmt=select(User).where(User.username == user.username))[0]
+        assert user == select_data(session=session, stmt=select(User).where(User.email == user.email))[0]
+        assert user == select_data(session=session, stmt=select(User).where(User.uuid == user.uuid))[0]
 
 
 def test_select_articles(db_session, create_users, create_articles, insert_data_fixture):
@@ -28,4 +28,4 @@ def test_select_articles(db_session, create_users, create_articles, insert_data_
         insert_data_fixture(session=session, data=user)
         article = create_articles(user_id=user.uuid)[0]
         insert_data_fixture(session=session, data=article)
-        assert article == select_data(session=session, stmts=select(Article).where(Article.id == article.id))[0]
+        assert article == select_data(session=session, stmt=select(Article).where(Article.id == article.id))[0]

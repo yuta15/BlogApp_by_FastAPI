@@ -1,10 +1,13 @@
 import pytest
 from uuid import UUID
+from sqlmodel import select
 
 from app.core.db import get_db
+from app.models.User import User
 from app.tests.unit.test_mods.create_user import create_success_users
 from app.tests.unit.test_mods.create_articles import create_success_articles
 from app.tests.unit.test_mods.insert_test_data import insert_test_data
+from app.tests.unit.test_mods.select_test_data import select_test_data
 
 
 @pytest.fixture(scope='function')
@@ -66,3 +69,13 @@ def insert_data_fixture():
     def _insert_test_user(session, data):
         insert_test_data(session=session, data=data)
     return _insert_test_user
+
+
+@pytest.fixture(scope='function')
+def select_user_fixture():
+    def _select_user_fixture(session, stmt=None):
+        if not stmt:
+            stmt = select(User)
+        users = select_test_data(session=session, stmt=stmt)
+        return users
+    return _select_user_fixture

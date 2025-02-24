@@ -2,19 +2,18 @@ from sqlmodel import Session
 from sqlalchemy.exc import OperationalError, IntegrityError
 
 
-def select_data(
+def select_test_data(
     *,
     session: Session,
     stmt: any
 ) -> list:
     """
     DBからデータを取得するための関数
-    
-    session: 
-        セッション
-    stmts:List
-        statementのリスト
-        
+    Args:
+        session: 
+            セッション
+        stmt:any
+            statement
     retun:
         list[data]
     """
