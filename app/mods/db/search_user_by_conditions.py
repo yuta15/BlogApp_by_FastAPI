@@ -6,7 +6,7 @@ from app.mods.db.select import select_data
 
 
 
-def search_user_by_conditions(*, session, method: bool=True, conditions:list=None):
+def search_user_by_conditions(*, session, method: bool=True, conditions:list=None)->list:
     """
     特定の検索条件において検索する為の関数
     
@@ -18,6 +18,8 @@ def search_user_by_conditions(*, session, method: bool=True, conditions:list=Non
             False: or search
         conditions: list
             stmts list
+    return: List
+        data
     """
     query = select(User)
     if method:
