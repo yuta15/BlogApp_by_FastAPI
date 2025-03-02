@@ -77,7 +77,7 @@ def create_success_users(
                 'create_at': now,
                 'update_at': now,
                 'hashed_password': PWD_CONTEXT.hash(password),
-                'email': f'{username}@gmail.com',
+                'email': f'{username}@example.com',
                 'is_active': bool(active_num),
                 'is_admin': bool(admin_num)
             }
