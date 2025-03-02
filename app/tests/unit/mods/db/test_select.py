@@ -2,7 +2,7 @@ import pytest
 from sqlmodel import select
 from datetime import datetime
 
-from app.mods.db.select import select_data
+from app.mods.db.select_data import select_data
 from app.models.User import User
 from app.models.Article import Article
 

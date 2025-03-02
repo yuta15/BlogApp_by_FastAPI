@@ -3,7 +3,7 @@ import pytest
 import datetime
 import time
 
-from app.mods.db.insert_update import insert_update_data
+from app.mods.db.insert_update_data import insert_update_data
 
 
 

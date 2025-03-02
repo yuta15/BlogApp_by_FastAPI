@@ -1,31 +1,30 @@
 from sqlmodel import Session
-from sqlalchemy.exc import OperationalError, IntegrityError
 
+from app.mods.db.generate_select_stmt import generate_select_stmt
+from app.mods.db.select_data import select_data
 
-def select_data(
+def begin_select(
     *,
-    session: Session,
-    stmt: any
-) -> list:
+    session:Session,
+    model: any,
+    is_and_condition: bool=True,
+    search_requirements:list,
+    offset: int | None = None,
+    limit: int | None = None,
+) -> list | None:
     """
-    DBからデータを取得するための関数
     
-    session: 
-        セッション
-    stmts:List
-        statementのリスト
-        
-    retun:
-        list[data]
+    
     """
-    try:
-        data = session.exec(statement=stmt).all()
-    except (OperationalError, IntegrityError):
-        session.rollback()
-        raise
-    except Exception:
-        session.rollback()
-        raise
-    finally:
-        return data
+    if search_requirements:
+        search_requirements = parse_validate_search_requirements(search_requirements)
+    stmt = generate_select_stmt(
+        model=model, 
+        is_and_condition=is_and_condition, 
+        requirements=search_requirements, 
+        offset=offset, 
+        limit=limit
+        )
+    selected_data = select_data(session=session, stmt=stmt)
+    return selected_data
     

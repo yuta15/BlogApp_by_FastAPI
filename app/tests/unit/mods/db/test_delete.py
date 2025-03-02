@@ -1,6 +1,6 @@
 import pytest
 
-from app.mods.db.delete import delete_data
+from app.mods.db.delete_data import delete_data
 
 def test_delete_user(db_session, create_users, insert_data_fixture):
     """

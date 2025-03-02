@@ -4,10 +4,10 @@ from sqlmodel import select, or_
 def generate_select_stmt(
     model, 
     is_and_condition:bool=True, 
-    requirements: list | None=None, 
+    requirements: list | None = None, 
     offset:int | None = None, 
     limit: int | None=None
-    )->list:
+    )->object:
     """
     DBのselect文を作成する関数
     limit, offset
@@ -54,8 +54,8 @@ def generate_select_stmt(
                     offset = 10, limit =20
 
     Return:
-        stmst: any
-            stmtを返す。
+        stmst: obj
+            stmt objectを返す。
     """
     
     if requirements is None:
