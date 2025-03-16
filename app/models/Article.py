@@ -20,16 +20,6 @@ class Article(ArticleBase, table=True):
     user_id: UUID = Field(foreign_key='user.uuid', index=True)
 
 
-class PostedArticle(ArticleBase):
+class Create_article(ArticleBase):
     body: str = Field(sa_column=Column(LONGTEXT))
-    
-    
-class EditArticle(ArticleBase):
-    id: UUID = Field(primary_key=True, index=True)
-    title: str = Field(max_length=150)
-    body: str = Field(sa_column=Column(LONGTEXT))
-    
-    
-class PublishArticle(ArticleBase):
-    id: UUID = Field(primary_key=True, index=True)
-    is_publish: bool = Field(default=False)
+    is_public: bool = Field(default=False)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 
-checker = APIRouter(
+user = APIRouter(
     prefix='/user',
     tags=['user']
 )
