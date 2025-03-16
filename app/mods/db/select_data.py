@@ -1,10 +1,11 @@
-from sqlmodel import Session
 from sqlalchemy.exc import OperationalError, IntegrityError
 
+from app.deps.crud import SessionDeps
+    
 
 def select_data(
     *,
-    session: Session,
+    session: SessionDeps,
     stmt: any
 ) -> list:
     """
@@ -21,11 +22,9 @@ def select_data(
     try:
         data = session.exec(statement=stmt).all()
     except (OperationalError, IntegrityError):
-        session.rollback()
         raise
     except Exception:
-        session.rollback()
         raise
-    finally:
+    else:
         return data
     

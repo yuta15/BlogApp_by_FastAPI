@@ -23,8 +23,8 @@ def parse_search_condition(
             continue
         # 文字列のみが入っている場合の処理
         elif not ':' in filter_str:
-            filters.append(Article.title.like('%{search_str}%'))
-            filters.append(Article.body.like('%{search_str}%'))
+            filters.append(Article.title.like(f'%{search_str}%'))
+            filters.append(Article.body.like(f'%{search_str}%'))
             continue
         
         column_str = filter_str.split(':')[0]
@@ -33,8 +33,8 @@ def parse_search_condition(
         is_artcle_filter = hasattr(Article, column_str)
         # カラムが合致しない場合
         if not is_user_filter and not is_artcle_filter:
-            filters.append(Article.title.like('%{search_str}%'))
-            filters.append(Article.body.like('%{search_str}%'))
+            filters.append(Article.title.like(f'%{search_str}%'))
+            filters.append(Article.body.like(f'%{search_str}%'))
             continue
         
         # 明示的な検索条件が設定されている場合の処理
@@ -48,7 +48,6 @@ def parse_search_condition(
         model = User if is_user_filter else Article
         
         if re.match('=.*', search_str):
-            getattr(model, column_str) == search_str[1:]
             filters.append(getattr(model, column_str) == search_str[1:])
         elif re.match('>=.*', search_str):
             filters.append(getattr(model, column_str) >= search_str[1:])

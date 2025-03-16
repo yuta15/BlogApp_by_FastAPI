@@ -1,10 +1,14 @@
 from fastapi import APIRouter
 from sqlmodel import Session
-
+from typing import List
+from uuid import UUID
 
 from app.deps.crud import SessionDeps
-from app.models.Article import Article
+from app.models.Article import Article, ListArticle, CreateArticle, ArticleId
+from app.mods.db.select_data import select_data
 from app.mods.db.select import select
+from app.mods.db.generate_select_stmt import generate_select_stmt
+from app.mods.db.insert_update_data import insert_update_data
 
 
 article = APIRouter(
@@ -13,8 +17,8 @@ article = APIRouter(
 )
 
 
-@article.get('/')
-async def list_articles(session:SessionDeps, offset:int=0, limit:int=10):
+@article.get('/list', response_model=List[ListArticle])
+async def list_articles(session:SessionDeps, offset:int=0, limit:int=10)->List[ListArticle]:
     """
     article一覧を取得するための関数
     limitを指定することで指定の量の記事を取得することが可能。
@@ -39,8 +43,8 @@ async def list_articles(session:SessionDeps, offset:int=0, limit:int=10):
     return articles
 
 
-@article.get('/list')
-async def fetch_article(Session:SessionDeps, id):
+@article.get('/')
+async def fetch_article(session:SessionDeps, id: UUID) -> Article:
     """
     特定の記事の情報を取得するAPI
     args:
@@ -57,7 +61,16 @@ async def fetch_article(Session:SessionDeps, id):
             - username
             - content
     """
-    pass
+    stmt = generate_select_stmt(
+        model=Article,
+        requirements=[Article.id == id]
+        )
+    article = select_data(
+        session=session,
+        stmt=stmt
+        )[0]
+    return article
+    
 
 
 @article.get('/search')
@@ -88,7 +101,7 @@ async def search_articles(Session:SessionDeps, search_requirement: list):
 
 
 @article.post('/create')
-async def create_aritcle(Session:SessionDeps, title: str, content: str):
+async def create_aritcle(session: SessionDeps, article_data:CreateArticle)->ListArticle:
     """
     新しい記事を投稿する機能
     args:
@@ -100,7 +113,9 @@ async def create_aritcle(Session:SessionDeps, title: str, content: str):
     return:
         create_status: Json
     """
-    pass
+    article = Article(**article_data.model_dump())
+    insert_update_data(session=session, data=article)
+    return article
 
 
 @article.post('/update')
