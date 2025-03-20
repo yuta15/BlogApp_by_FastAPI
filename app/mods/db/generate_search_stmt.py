@@ -1,7 +1,7 @@
 from sqlmodel import select, or_
 
 
-def generate_select_stmt(
+def generate_search_stmt(
     model, 
     is_and_condition:bool=True, 
     requirements: list | None = None, 

@@ -3,7 +3,7 @@ from sqlmodel import select, or_
 from datetime import datetime
 
 from app.models.User import User
-from app.mods.db.generate_select_stmt import generate_select_stmt
+from app.mods.db.generate_search_stmt import generate_select_stmt
 
 
 @pytest.mark.parametrize(

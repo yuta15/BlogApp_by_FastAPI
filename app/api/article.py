@@ -6,8 +6,8 @@ from uuid import UUID
 from app.deps.crud import SessionDeps
 from app.models.Article import Article, ListArticle, CreateArticle, ArticleId
 from app.mods.db.select_data import select_data
-from app.mods.db.select import select
-from app.mods.db.generate_select_stmt import generate_select_stmt
+from app.mods.db.search import search
+from app.mods.db.generate_search_stmt import generate_search_stmt
 from app.mods.db.insert_update_data import insert_update_data
 
 
@@ -39,7 +39,7 @@ async def list_articles(session:SessionDeps, offset:int=0, limit:int=10)->List[L
             - updated_at
             metaデータのみの記事一覧
     """
-    articles = select(session=session, model=Article, offset=offset, limit=limit)
+    articles = search(session=session, model=Article, offset=offset, limit=limit)
     return articles
 
 
@@ -61,7 +61,7 @@ async def fetch_article(session:SessionDeps, id: UUID) -> Article:
             - username
             - content
     """
-    stmt = generate_select_stmt(
+    stmt = generate_search_stmt(
         model=Article,
         requirements=[Article.id == id]
         )
@@ -74,7 +74,7 @@ async def fetch_article(session:SessionDeps, id: UUID) -> Article:
 
 
 @article.get('/search')
-async def search_articles(Session:SessionDeps, search_requirement: list):
+async def search_articles(Session:SessionDeps, search_conditions: list):
     """
     検索条件に応じて記事を検索するAPI
     args:
