@@ -3,7 +3,7 @@ from sqlmodel import select, or_
 from datetime import datetime
 
 from app.models.User import User
-from app.mods.db.generate_search_stmt import generate_select_stmt
+from app.mods.db.generate_search_stmt import generate_search_stmt
 
 
 @pytest.mark.parametrize(
@@ -33,7 +33,7 @@ from app.mods.db.generate_search_stmt import generate_select_stmt
 )
 def test_generate_select_unit_stmt(currect_stmt_str, args):
     """generate_select_stmtのテスト"""
-    generated_stmt_str = str(generate_select_stmt(model=User, requirements=args).compile(compile_kwargs={"literal_binds": True}))
+    generated_stmt_str = str(generate_search_stmt(model=User, requirements=args).compile(compile_kwargs={"literal_binds": True}))
     assert str(currect_stmt_str) == generated_stmt_str
 
 
@@ -64,7 +64,7 @@ def test_generate_select_unit_stmt(currect_stmt_str, args):
 )
 def test_generate_select_multi_stmt(currect_stmt_str, args):
     """generate_select_stmtのテスト"""
-    generated_stmt_str = str(generate_select_stmt(model=User, requirements=args).compile(compile_kwargs={"literal_binds": True}))
+    generated_stmt_str = str(generate_search_stmt(model=User, requirements=args).compile(compile_kwargs={"literal_binds": True}))
     assert str(currect_stmt_str) == generated_stmt_str
 
 
@@ -90,7 +90,7 @@ def test_generate_select_multi_stmt(currect_stmt_str, args):
 )
 def test_generate_select_offset_stmt(currect_stmt_str, args, range):
     """generate_select_stmtのテスト"""
-    generated_stmt_str = str(generate_select_stmt(model=User, requirements=args, offset=range[0], limit=range[1]).compile(compile_kwargs={"literal_binds": True}))
+    generated_stmt_str = str(generate_search_stmt(model=User, requirements=args, offset=range[0], limit=range[1]).compile(compile_kwargs={"literal_binds": True}))
     assert str(currect_stmt_str) == generated_stmt_str
 
 
@@ -111,5 +111,5 @@ def test_generate_select_offset_stmt(currect_stmt_str, args, range):
 )
 def test_generate_select_condition_stmt(currect_stmt_str, requirements, is_and_condition):
     """generate_select_stmtのテスト"""
-    generated_stmt_str = str(generate_select_stmt(model=User, requirements=requirements, is_and_condition=is_and_condition).compile(compile_kwargs={"literal_binds": True}))
+    generated_stmt_str = str(generate_search_stmt(model=User, requirements=requirements, is_and_condition=is_and_condition).compile(compile_kwargs={"literal_binds": True}))
     assert str(currect_stmt_str) == generated_stmt_str

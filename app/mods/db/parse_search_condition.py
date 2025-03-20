@@ -6,7 +6,7 @@ from app.models.User import User
 
 def parse_search_condition(
     filters_str: list
-) -> tuple:
+) -> tuple[bool, list]:
     """
     filters: list
         検索条件をまとめた文字列のリスト
@@ -17,16 +17,17 @@ def parse_search_condition(
     filters = []
     is_and_condition = True
     for filter_str in filters_str:
+
+        
         # orが入っていた場合の処理
         if filter_str == 'or':
             is_and_condition = False
             continue
         # 文字列のみが入っている場合の処理
         elif not ':' in filter_str:
-            filters.append(Article.title.like(f'%{search_str}%'))
-            filters.append(Article.body.like(f'%{search_str}%'))
+            filters.append(Article.title.like(f'%{filter_str}%'))
+            filters.append(Article.body.like(f'%{filter_str}%'))
             continue
-        
         column_str = filter_str.split(':')[0]
         search_str = filter_str.split(':')[1]
         is_user_filter = hasattr(User, column_str)
