@@ -10,7 +10,8 @@ class UserBase(SQLModel):
 
 
 class User(UserBase, table=True):
-    uuid: UUID = Field(primary_key=True, index=True, unique=True, default=uuid4())
+    # default_factory ensures a fresh UUID is generated for every new User instance
+    uuid: UUID = Field(primary_key=True, index=True, unique=True, default_factory=uuid4)
     create_at: datetime
     update_at: datetime
     hashed_password: str
